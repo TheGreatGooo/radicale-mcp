@@ -1,0 +1,2 @@
+# Dependencies are managed via pyproject.toml
+# This file is kept for compatibility with some tools

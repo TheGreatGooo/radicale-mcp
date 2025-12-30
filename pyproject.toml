@@ -7,7 +7,7 @@ name = "caldav-mcp"
 version = "0.1.0"
 description = "MCP CalDAV STDIO application for CRUD operations on events, journals, and todos"
 authors = [
-    {name = "MCP CalDAV Developer", email = "developer@example.com"}
+    {name = "MCP CalDAV Developer"}
 ]
 readme = "README.md"
 license = {text = "MIT"}
@@ -26,5 +26,5 @@ dependencies = [
 caldav-mcp = "main:main"
 
 [project.urls]
-Homepage = "https://github.com/example/caldav-mcp"
-Repository = "https://github.com/example/caldav-mcp"
+Homepage = "https://github.com/TheGreatGooo/radicale-mcp"
+Repository = "https://github.com/TheGreatGooo/radicale-mcp"

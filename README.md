@@ -2,6 +2,14 @@
 
 A Python-based MCP (Model Communication Protocol) application that provides CRUD operations for events, journals, and todos using the caldav Python library.
 
+## Dependencies
+
+This application requires the following Python packages:
+- `caldav` - For CalDAV protocol support
+- `python-dateutil` - For date/time parsing and manipulation
+
+These dependencies are automatically managed through the package configuration.
+
 ## Installation with uv
 
 This application can be installed and run using `uv` or `uvx`:

@@ -7,12 +7,8 @@ import logging
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-# Import caldav library (will be used in actual implementation)
-try:
-    import caldav
-    CALDAV_AVAILABLE = True
-except ImportError:
-    CALDAV_AVAILABLE = False
+# Import caldav library (dependency is declared in pyproject.toml)
+import caldav
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +25,6 @@ class CalDAVClient:
         self.config_manager = config_manager
         self.client = None
         self.connected = False
-        
-        if not CALDAV_AVAILABLE:
-            logger.warning("caldav library not available. Some functionality will be limited.")
     
     def connect(self) -> bool:
         """
@@ -40,10 +33,6 @@ class CalDAVClient:
         Returns:
             True if connection successful, False otherwise
         """
-        if not CALDAV_AVAILABLE:
-            logger.error("caldav library not available")
-            return False
-            
         try:
             server_url = self.config_manager.get('server_url')
             username = self.config_manager.get('username')

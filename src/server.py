@@ -28,6 +28,33 @@ def get_events() -> list:
         return [{"error": f"Failed to get events: {str(e)}"}]
 
 @mcp.tool
+def connect() -> dict:
+    """Connect to the CalDAV server."""
+    try:
+        success = caldav_client.connect()
+        if success:
+            return {"status": "connected", "message": "Successfully connected to CalDAV server"}
+        else:
+            return {"status": "failed", "message": "Failed to connect to CalDAV server"}
+    except Exception as e:
+        return {"status": "error", "message": f"Error connecting to CalDAV server: {str(e)}"}
+
+@mcp.tool
+def reconnect() -> dict:
+    """Reconnect to the CalDAV server."""
+    try:
+        # Disconnect first
+        caldav_client.disconnect()
+        # Then reconnect
+        success = caldav_client.connect()
+        if success:
+            return {"status": "reconnected", "message": "Successfully reconnected to CalDAV server"}
+        else:
+            return {"status": "failed", "message": "Failed to reconnect to CalDAV server"}
+    except Exception as e:
+        return {"status": "error", "message": f"Error reconnecting to CalDAV server: {str(e)}"}
+
+@mcp.tool
 def create_event(title: str, start_time: str, end_time: str) -> dict:
     """Create a new event on the CalDAV server."""
     try:

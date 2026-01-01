@@ -20,10 +20,11 @@ requires-python = ">=3.8"
 dependencies = [
     "caldav>=0.9.0",
     "python-dateutil>=2.8.0",
+    "fastmcp>=0.1.0",
 ]
 
 [project.scripts]
-radicale_mcp = "main:main"
+radicale_mcp = "server:start_server"
 
 [project.urls]
 Homepage = "https://github.com/TheGreatGooo/radicale-mcp"

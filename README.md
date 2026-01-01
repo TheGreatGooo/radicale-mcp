@@ -7,6 +7,7 @@ A Python-based MCP (Model Communication Protocol) application that provides CRUD
 This application requires the following Python packages:
 - `caldav` - For CalDAV protocol support
 - `python-dateutil` - For date/time parsing and manipulation
+- `fastmcp` - For MCP protocol implementation
 
 These dependencies are automatically managed through the package configuration.
 
@@ -65,7 +66,7 @@ uvx github:example/caldav-mcp
 1. Clone or download this repository
 2. Install dependencies:
    ```bash
-   pip install -r requirements.txt
+   pip install -e .
    ```
 
 ## Configuration
@@ -95,9 +96,16 @@ Create `config/settings.json`:
 
 ## Usage
 
-Run the application:
+The application runs as an MCP server by default. To start it:
+
 ```bash
-python main.py
+python -m src.server
+```
+
+Or simply:
+
+```bash
+radicale_mcp
 ```
 
 The application will listen on STDIO for MCP protocol messages. It supports the following methods:
@@ -183,6 +191,19 @@ caldav-mcp/
     ├── project_structure.md
     ├── data_models.md
     └── mcp_protocol.md
+```
+
+## FastMCP Integration
+
+This application demonstrates how to integrate with the FastMCP library. The `src/server.py` file shows:
+
+- How to create an MCP server instance
+- How to define tools that can be called by MCP clients
+- Integration with existing CalDAV functionality
+
+To run the FastMCP server:
+```bash
+python -m src.server
 ```
 
 ## License

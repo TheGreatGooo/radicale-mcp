@@ -2,7 +2,7 @@
 """
 Entry point for running the package directly.
 """
-from main import main
+from server import start_server
 
 if __name__ == "__main__":
-    main()
+    start_server()

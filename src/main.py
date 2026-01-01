@@ -7,8 +7,8 @@ that supports CRUD operations on events, journals, and todos.
 
 import sys
 import logging
-from src.stdio_interface import StdioInterface
-from src.config_manager import ConfigManager
+from stdio_interface import StdioInterface
+from config_manager import ConfigManager
 
 # Configure logging
 logging.basicConfig(

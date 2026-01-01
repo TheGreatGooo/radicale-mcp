@@ -12,16 +12,11 @@ from models.journal import Journal
 from models.todo import Todo
 
 # Initialize the MCP server
-mcp = FastMCP("Demo 🚀")
+mcp = FastMCP("Radicale MCP server 🚀")
 
 # Initialize configuration and client
 config_manager = ConfigManager()
 caldav_client = CalDAVClient(config_manager)
-
-@mcp.tool
-def hello(name: str) -> str:
-    """A simple hello function to demonstrate MCP tool usage."""
-    return f"Hello, {name}!"
 
 @mcp.tool
 def get_events() -> list:

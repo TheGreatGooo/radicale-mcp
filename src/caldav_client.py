@@ -548,3 +548,65 @@ class CalDAVClient:
        except Exception as e:
            logger.error(f"Failed to delete todo: {e}")
            return False
+
+    def get_events(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> list:
+        """
+        Retrieve events from the CalDAV server.
+        
+        Args:
+            start_date: Optional start date filter (ISO format)
+            end_date: Optional end date filter (ISO format)
+            
+        Returns:
+            List of event dictionaries or empty list if failed
+        """
+        if not self.connected:
+            logger.error("Not connected to CalDAV server")
+            return []
+            
+        try:
+            # Get the principal and calendar
+            principal = self.client.principal()
+            calendar = principal.calendars()[0]  # Use first calendar
+            
+            # Fetch events from the calendar
+            if start_date and end_date:
+                # Filter by date range
+                events = calendar.events(start=start_date, end=end_date)
+            else:
+                # Get all events
+                events = calendar.events()
+            
+            # Convert events to list of dictionaries
+            event_list = []
+            for event in events:
+                # Get the VEVENT data
+                vevent = event.vevent
+                
+                # Extract event properties
+                event_data = {
+                    "id": event.id,
+                    "title": vevent.get('summary', ''),
+                    "description": vevent.get('description', ''),
+                    "start_time": vevent.get('dtstart', ''),
+                    "end_time": vevent.get('dtend', ''),
+                    "location": vevent.get('location', ''),
+                    "status": vevent.get('status', '')
+                }
+                
+                # Add attendees if they exist
+                attendees = vevent.get('attendee', [])
+                if attendees:
+                    if isinstance(attendees, list):
+                        event_data["attendees"] = attendees
+                    else:
+                        event_data["attendees"] = [attendees]
+                
+                event_list.append(event_data)
+            
+            logger.info(f"Retrieved {len(event_list)} events")
+            return event_list
+            
+        except Exception as e:
+            logger.error(f"Failed to retrieve events: {e}")
+            return []

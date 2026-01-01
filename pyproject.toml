@@ -23,7 +23,7 @@ dependencies = [
 ]
 
 [project.scripts]
-radicale_mcp = "__main__:main"
+radicale_mcp = "main:main"
 
 [project.urls]
 Homepage = "https://github.com/TheGreatGooo/radicale-mcp"

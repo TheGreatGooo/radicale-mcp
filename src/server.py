@@ -5,11 +5,11 @@ This demonstrates how to use the fastmcp library with the existing CalDAV functi
 """
 
 from fastmcp import FastMCP
-from src.caldav_client import CalDAVClient
-from src.config_manager import ConfigManager
-from src.models.event import Event
-from src.models.journal import Journal
-from src.models.todo import Todo
+from caldav_client import CalDAVClient
+from config_manager import ConfigManager
+from models.event import Event
+from models.journal import Journal
+from models.todo import Todo
 
 # Initialize the MCP server
 mcp = FastMCP("Demo 🚀")

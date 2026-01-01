@@ -99,7 +99,7 @@ Create `config/settings.json`:
 The application runs as an MCP server by default. To start it:
 
 ```bash
-python -m src.server
+python -m server
 ```
 
 Or simply:
@@ -203,7 +203,7 @@ This application demonstrates how to integrate with the FastMCP library. The `sr
 
 To run the FastMCP server:
 ```bash
-python -m src.server
+python -m server
 ```
 
 ## License

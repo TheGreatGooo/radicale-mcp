@@ -8,8 +8,8 @@ import json
 import logging
 import threading
 from typing import Dict, Any, Optional
-from src.caldav_client import CalDAVClient
-from src.error_handler import ErrorHandler
+from caldav_client import CalDAVClient
+from error_handler import ErrorHandler
 
 logger = logging.getLogger(__name__)
 

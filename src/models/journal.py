@@ -5,7 +5,7 @@ Represents journal entries with all relevant properties.
 
 from typing import Dict, Any, List
 from datetime import datetime
-from src.models.base_model import BaseModel
+from models.base_model import BaseModel
 
 class Journal(BaseModel):
     """Model representing a journal entry."""

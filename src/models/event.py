@@ -5,7 +5,7 @@ Represents calendar events with all relevant properties.
 
 from typing import Dict, Any, List
 from datetime import datetime
-from src.models.base_model import BaseModel
+from models.base_model import BaseModel
 
 class Event(BaseModel):
     """Model representing a calendar event."""

@@ -610,3 +610,57 @@ class CalDAVClient:
         except Exception as e:
             logger.error(f"Failed to retrieve events: {e}")
             return []
+    
+    def get_todos(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> list:
+        """
+        Retrieve todos from the CalDAV server.
+        
+        Args:
+            start_date: Optional start date filter (ISO format)
+            end_date: Optional end date filter (ISO format)
+            
+        Returns:
+            List of todo dictionaries or empty list if failed
+        """
+        if not self.connected:
+            logger.error("Not connected to CalDAV server")
+            return []
+            
+        try:
+            # Get the principal and calendar
+            principal = self.client.principal()
+            calendar = principal.calendars()[0]  # Use first calendar
+            
+            # Fetch todos from the calendar
+            if start_date and end_date:
+                # Filter by date range
+                todos = calendar.todos(start=start_date, end=end_date)
+            else:
+                # Get all todos
+                todos = calendar.todos()
+            
+            # Convert todos to list of dictionaries
+            todo_list = []
+            for todo in todos:
+                # Get the VTODO data
+                vtodo = todo.vtodo
+                
+                # Extract todo properties
+                todo_data = {
+                    "id": todo.id,
+                    "title": vtodo.get('summary', ''),
+                    "description": vtodo.get('description', ''),
+                    "priority": vtodo.get('priority', 5),
+                    "status": vtodo.get('status', ''),
+                    "due_date": vtodo.get('due', ''),
+                    "completed_date": vtodo.get('completed', '')
+                }
+                
+                todo_list.append(todo_data)
+            
+            logger.info(f"Retrieved {len(todo_list)} todos")
+            return todo_list
+            
+        except Exception as e:
+            logger.error(f"Failed to retrieve todos: {e}")
+            return []

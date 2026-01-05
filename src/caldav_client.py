@@ -7,7 +7,6 @@ import logging
 from typing import Dict, Any, Optional
 from datetime import datetime
 
-# Import caldav library (dependency is declared in pyproject.toml)
 import caldav
 
 logger = logging.getLogger(__name__)
@@ -41,15 +40,15 @@ class CalDAVClient:
             
             # Create connection
             if use_ssl:
-                self.client = caldav.DAVClient(
-                    server_url,
+                self.client = caldav.davclient.get_davclient(
+                    url=server_url,
                     username=username,
                     password=password,
                     ssl_verify_cert=True
                 )
             else:
-                self.client = caldav.DAVClient(
-                    server_url,
+                self.client = caldav.davclient.get_davclient(
+                    url=server_url,
                     username=username,
                     password=password,
                     ssl_verify_cert=False

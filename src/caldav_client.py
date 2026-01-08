@@ -61,7 +61,7 @@ class CalDAVClient:
         except Exception as e:
             logger.error(f"Failed to connect to CalDAV server: {e}")
             self.connected = False
-            return False
+            raise  # Propagate the exception
     
     def disconnect(self) -> None:
        """Close the connection to the CalDAV server."""
@@ -92,7 +92,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return None
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -122,7 +122,7 @@ class CalDAVClient:
            return new_event.id
        except Exception as e:
            logger.error(f"Failed to create event: {e}")
-           return None
+           raise  # Propagate the exception
     
     def read_event(self, event_id: str) -> Optional[Dict[str, Any]]:
        """
@@ -136,7 +136,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return None
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -161,7 +161,7 @@ class CalDAVClient:
            return event_data
        except Exception as e:
            logger.error(f"Failed to read event: {e}")
-           return None
+           raise  # Propagate the exception
     
     def update_event(self, event_id: str, event_data: Dict[str, Any]) -> bool:
        """
@@ -176,7 +176,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return False
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -207,7 +207,7 @@ class CalDAVClient:
            return True
        except Exception as e:
            logger.error(f"Failed to update event: {e}")
-           return False
+           raise  # Propagate the exception
     
     def delete_event(self, event_id: str) -> bool:
        """
@@ -221,7 +221,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return False
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -238,7 +238,7 @@ class CalDAVClient:
            return True
        except Exception as e:
            logger.error(f"Failed to delete event: {e}")
-           return False
+           raise  # Propagate the exception
     
     def create_journal(self, journal_data: Dict[str, Any]) -> Optional[str]:
        """
@@ -252,7 +252,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return None
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -277,7 +277,7 @@ class CalDAVClient:
            return new_journal.id
        except Exception as e:
            logger.error(f"Failed to create journal: {e}")
-           return None
+           raise  # Propagate the exception
     
     def read_journal(self, journal_id: str) -> Optional[Dict[str, Any]]:
        """
@@ -291,7 +291,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return None
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -314,7 +314,7 @@ class CalDAVClient:
            return journal_data
        except Exception as e:
            logger.error(f"Failed to read journal: {e}")
-           return None
+           raise  # Propagate the exception
     
     def update_journal(self, journal_id: str, journal_data: Dict[str, Any]) -> bool:
        """
@@ -329,7 +329,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return False
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -356,7 +356,7 @@ class CalDAVClient:
            return True
        except Exception as e:
            logger.error(f"Failed to update journal: {e}")
-           return False
+           raise  # Propagate the exception
     
     def delete_journal(self, journal_id: str) -> bool:
        """
@@ -370,7 +370,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return False
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -387,7 +387,7 @@ class CalDAVClient:
            return True
        except Exception as e:
            logger.error(f"Failed to delete journal: {e}")
-           return False
+           raise  # Propagate the exception
     
     def create_todo(self, todo_data: Dict[str, Any]) -> Optional[str]:
        """
@@ -401,7 +401,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return None
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -430,7 +430,7 @@ class CalDAVClient:
            return new_todo.id
        except Exception as e:
            logger.error(f"Failed to create todo: {e}")
-           return None
+           raise  # Propagate the exception
     
     def read_todo(self, todo_id: str) -> Optional[Dict[str, Any]]:
        """
@@ -444,7 +444,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return None
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -469,7 +469,7 @@ class CalDAVClient:
            return todo_data
        except Exception as e:
            logger.error(f"Failed to read todo: {e}")
-           return None
+           raise  # Propagate the exception
     
     def update_todo(self, todo_id: str, todo_data: Dict[str, Any]) -> bool:
        """
@@ -484,7 +484,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return False
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -515,7 +515,7 @@ class CalDAVClient:
            return True
        except Exception as e:
            logger.error(f"Failed to update todo: {e}")
-           return False
+           raise  # Propagate the exception
     
     def delete_todo(self, todo_id: str) -> bool:
        """
@@ -529,7 +529,7 @@ class CalDAVClient:
        """
        if not self.connected:
            logger.error("Not connected to CalDAV server")
-           return False
+           raise Exception("Not connected to CalDAV server")
            
        try:
            # Get the principal and calendar
@@ -546,7 +546,7 @@ class CalDAVClient:
            return True
        except Exception as e:
            logger.error(f"Failed to delete todo: {e}")
-           return False
+           raise  # Propagate the exception
 
     def get_events(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> list:
         """
@@ -561,7 +561,7 @@ class CalDAVClient:
         """
         if not self.connected:
             logger.error("Not connected to CalDAV server")
-            return []
+            raise Exception("Not connected to CalDAV server")
             
         try:
             # Get the principal and calendar
@@ -608,7 +608,7 @@ class CalDAVClient:
             
         except Exception as e:
             logger.error(f"Failed to retrieve events: {e}")
-            return []
+            raise  # Propagate the exception
     
     def get_todos(self, start_date: Optional[str] = None, end_date: Optional[str] = None) -> list:
         """
@@ -623,7 +623,7 @@ class CalDAVClient:
         """
         if not self.connected:
             logger.error("Not connected to CalDAV server")
-            return []
+            raise Exception("Not connected to CalDAV server")
             
         try:
             # Get the principal and calendar
@@ -662,4 +662,4 @@ class CalDAVClient:
             
         except Exception as e:
             logger.error(f"Failed to retrieve todos: {e}")
-            return []
+            raise  # Propagate the exception

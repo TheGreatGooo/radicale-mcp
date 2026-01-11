@@ -149,12 +149,12 @@ class CalDAVClient:
            # Convert to dictionary format
            event_data = {
                "id": event_id,
-               "title": event.vevent.get('summary', ''),
-               "description": event.vevent.get('description', ''),
-               "start_time": event.vevent.get('dtstart', ''),
-               "end_time": event.vevent.get('dtend', ''),
-               "location": event.vevent.get('location', ''),
-               "status": event.vevent.get('status', '')
+               "title": event.vobject_instance.vevent.summary.value if hasattr(event.vobject_instance.vevent, 'summary') else '',
+               "description": event.vobject_instance.vevent.description.value if hasattr(event.vobject_instance.vevent, 'description') else '',
+               "start_time": event.vobject_instance.vevent.dtstart.value if hasattr(event.vobject_instance.vevent, 'dtstart') else '',
+               "end_time": event.vobject_instance.vevent.dtend.value if hasattr(event.vobject_instance.vevent, 'dtend') else '',
+               "location": event.vobject_instance.vevent.location.value if hasattr(event.vobject_instance.vevent, 'location') else '',
+               "status": event.vobject_instance.vevent.status.value if hasattr(event.vobject_instance.vevent, 'status') else ''
            }
            
            logger.info(f"Read event: {event_id}")
@@ -188,17 +188,17 @@ class CalDAVClient:
            
            # Update the event properties
            if 'title' in event_data:
-               event.vevent.set('summary', event_data['title'])
+               event.vobject_instance.vevent.summary.value = event_data['title']
            if 'description' in event_data:
-               event.vevent.set('description', event_data['description'])
+               event.vobject_instance.vevent.description.value = event_data['description']
            if 'start_time' in event_data:
-               event.vevent.set('dtstart', event_data['start_time'])
+               event.vobject_instance.vevent.dtstart.value = event_data['start_time']
            if 'end_time' in event_data:
-               event.vevent.set('dtend', event_data['end_time'])
+               event.vobject_instance.vevent.dtend.value = event_data['end_time']
            if 'location' in event_data:
-               event.vevent.set('location', event_data['location'])
+               event.vobject_instance.vevent.location.value = event_data['location']
            if 'status' in event_data:
-               event.vevent.set('status', event_data['status'])
+               event.vobject_instance.vevent.status.value = event_data['status']
            
            # Save the updated event
            event.save()

@@ -38,7 +38,7 @@ uv pip install -e .
 
 ### Using uvx (run directly from GitHub)
 ```bash
-uvx radicale-mcp@https://github.com/TheGreatGooo/radicale-mcp
+uvx radicale-mcp@git+https://github.com/TheGreatGooo/radicale-mcp
 ```
 
 ## Features

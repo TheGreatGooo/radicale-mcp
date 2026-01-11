@@ -10,7 +10,7 @@ from models.base_model import BaseModel
 class Event(BaseModel):
     """Model representing a calendar event."""
     
-    def __init__(self, 
+    def __init__(self,
                  title: str = "",
                  description: str = "",
                  start_time: datetime = None,
@@ -21,6 +21,7 @@ class Event(BaseModel):
                  status: str = "CONFIRMED",
                  priority: int = 5,
                  url: str = "",
+                 vevent: Any = None,
                  **kwargs):
         """
         Initialize an Event model.
@@ -50,6 +51,7 @@ class Event(BaseModel):
         self.status = status
         self.priority = priority
         self.url = url
+        self.vevent = vevent
     
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -88,6 +90,7 @@ class Event(BaseModel):
         self.status = data.get("status", "CONFIRMED")
         self.priority = data.get("priority", 5)
         self.url = data.get("url", "")
+        self.vevent = data.get("vevent", None)
         
         # Handle datetime conversion
         start_time_str = data.get("start_time")

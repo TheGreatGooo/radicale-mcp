@@ -149,13 +149,32 @@ class CalDAVClient:
            # Convert to dictionary format
            event_data = {
                "id": event_id,
-               "title": event.vobject_instance.vevent.summary.value if hasattr(event.vobject_instance.vevent, 'summary') else '',
-               "description": event.vobject_instance.vevent.description.value if hasattr(event.vobject_instance.vevent, 'description') else '',
-               "start_time": event.vobject_instance.vevent.dtstart.value if hasattr(event.vobject_instance.vevent, 'dtstart') else '',
-               "end_time": event.vobject_instance.vevent.dtend.value if hasattr(event.vobject_instance.vevent, 'dtend') else '',
-               "location": event.vobject_instance.vevent.location.value if hasattr(event.vobject_instance.vevent, 'location') else '',
-               "status": event.vobject_instance.vevent.status.value if hasattr(event.vobject_instance.vevent, 'status') else ''
+               "title": '',
+               "description": '',
+               "start_time": '',
+               "end_time": '',
+               "location": '',
+               "status": ''
            }
+           
+           # Walk through components to find VEVENT
+           for component in event.icalendar_instance.walk():
+               if component.name == "VEVENT":
+                   event_data["title"] = str(component.get('summary', ''))
+                   event_data["description"] = str(component.get('description', ''))
+                   
+                   # Handle date/time values
+                   dtstart = component.get('dtstart')
+                   if dtstart:
+                       event_data["start_time"] = dtstart.dt.strftime("%m/%d/%Y %H:%M")
+                   
+                   dtend = component.get('dtend')
+                   if dtend:
+                       event_data["end_time"] = dtend.dt.strftime("%m/%d/%Y %H:%M")
+                   
+                   event_data["location"] = str(component.get('location', ''))
+                   event_data["status"] = str(component.get('status', ''))
+                   break  # We only need the first VEVENT
            
            logger.info(f"Read event: {event_id}")
            return event_data
@@ -186,19 +205,22 @@ class CalDAVClient:
            # Retrieve the event by ID
            event = calendar.event(event_id)
            
-           # Update the event properties
-           if 'title' in event_data:
-               event.vobject_instance.vevent.summary.value = event_data['title']
-           if 'description' in event_data:
-               event.vobject_instance.vevent.description.value = event_data['description']
-           if 'start_time' in event_data:
-               event.vobject_instance.vevent.dtstart.value = event_data['start_time']
-           if 'end_time' in event_data:
-               event.vobject_instance.vevent.dtend.value = event_data['end_time']
-           if 'location' in event_data:
-               event.vobject_instance.vevent.location.value = event_data['location']
-           if 'status' in event_data:
-               event.vobject_instance.vevent.status.value = event_data['status']
+           # Update the event properties by modifying the icalendar instance
+           for component in event.icalendar_instance.walk():
+               if component.name == "VEVENT":
+                   if 'title' in event_data:
+                       component['summary'] = event_data['title']
+                   if 'description' in event_data:
+                       component['description'] = event_data['description']
+                   if 'start_time' in event_data:
+                       component['dtstart'] = event_data['start_time']
+                   if 'end_time' in event_data:
+                       component['dtend'] = event_data['end_time']
+                   if 'location' in event_data:
+                       component['location'] = event_data['location']
+                   if 'status' in event_data:
+                       component['status'] = event_data['status']
+                   break  # We only need to modify the first VEVENT
            
            # Save the updated event
            event.save()
@@ -304,11 +326,25 @@ class CalDAVClient:
            # Convert to dictionary format
            journal_data = {
                "id": journal_id,
-               "title": journal.vobject_instance.vjournal.summary.value if hasattr(journal.vobject_instance.vjournal, 'summary') else '',
-               "description": journal.vobject_instance.vjournal.description.value if hasattr(journal.vobject_instance.vjournal, 'description') else '',
-               "date": journal.vobject_instance.vjournal.dtstart.value if hasattr(journal.vobject_instance.vjournal, 'dtstart') else '',
-               "status": journal.vobject_instance.vjournal.status.value if hasattr(journal.vobject_instance.vjournal, 'status') else ''
+               "title": '',
+               "description": '',
+               "date": '',
+               "status": ''
            }
+           
+           # Walk through components to find VJOURNAL
+           for component in journal.icalendar_instance.walk():
+               if component.name == "VJOURNAL":
+                   journal_data["title"] = str(component.get('summary', ''))
+                   journal_data["description"] = str(component.get('description', ''))
+                   
+                   # Handle date/time values
+                   dtstart = component.get('dtstart')
+                   if dtstart:
+                       journal_data["date"] = dtstart.dt.strftime("%m/%d/%Y %H:%M")
+                   
+                   journal_data["status"] = str(component.get('status', ''))
+                   break  # We only need the first VJOURNAL
            
            logger.info(f"Read journal: {journal_id}")
            return journal_data
@@ -339,15 +375,18 @@ class CalDAVClient:
            # Retrieve the journal by ID
            journal = calendar.journal(journal_id)
            
-           # Update the journal properties
-           if 'title' in journal_data:
-               journal.vobject_instance.vjournal.summary.value = journal_data['title']
-           if 'description' in journal_data:
-               journal.vobject_instance.vjournal.description.value = journal_data['description']
-           if 'date' in journal_data:
-               journal.vobject_instance.vjournal.dtstart.value = journal_data['date']
-           if 'status' in journal_data:
-               journal.vobject_instance.vjournal.status.value = journal_data['status']
+           # Update the journal properties by modifying the icalendar instance
+           for component in journal.icalendar_instance.walk():
+               if component.name == "VJOURNAL":
+                   if 'title' in journal_data:
+                       component['summary'] = journal_data['title']
+                   if 'description' in journal_data:
+                       component['description'] = journal_data['description']
+                   if 'date' in journal_data:
+                       component['dtstart'] = journal_data['date']
+                   if 'status' in journal_data:
+                       component['status'] = journal_data['status']
+                   break  # We only need to modify the first VJOURNAL
            
            # Save the updated journal
            journal.save()
@@ -457,13 +496,36 @@ class CalDAVClient:
            # Convert to dictionary format
            todo_data = {
                "id": todo_id,
-               "title": todo.vtodo.get('summary', ''),
-               "description": todo.vtodo.get('description', ''),
-               "priority": todo.vtodo.get('priority', 5),
-               "status": todo.vtodo.get('status', ''),
-               "due_date": todo.vtodo.get('due', ''),
-               "completed_date": todo.vtodo.get('completed', '')
+               "title": '',
+               "description": '',
+               "priority": 5,
+               "status": '',
+               "due_date": '',
+               "completed_date": ''
            }
+           
+           # Walk through components to find VTODO
+           for component in todo.icalendar_instance.walk():
+               if component.name == "VTODO":
+                   todo_data["title"] = str(component.get('summary', ''))
+                   todo_data["description"] = str(component.get('description', ''))
+                   
+                   # Handle priority
+                   priority = component.get('priority')
+                   if priority:
+                       todo_data["priority"] = int(priority)
+                   
+                   todo_data["status"] = str(component.get('status', ''))
+                   
+                   # Handle date/time values
+                   due = component.get('due')
+                   if due:
+                       todo_data["due_date"] = due.dt.strftime("%m/%d/%Y %H:%M")
+                   
+                   completed = component.get('completed')
+                   if completed:
+                       todo_data["completed_date"] = completed.dt.strftime("%m/%d/%Y %H:%M")
+                   break  # We only need the first VTODO
            
            logger.info(f"Read todo: {todo_id}")
            return todo_data
@@ -494,19 +556,22 @@ class CalDAVClient:
            # Retrieve the todo by ID
            todo = calendar.todo(todo_id)
            
-           # Update the todo properties
-           if 'title' in todo_data:
-               todo.vtodo.set('summary', todo_data['title'])
-           if 'description' in todo_data:
-               todo.vtodo.set('description', todo_data['description'])
-           if 'priority' in todo_data:
-               todo.vtodo.set('priority', todo_data['priority'])
-           if 'status' in todo_data:
-               todo.vtodo.set('status', todo_data['status'])
-           if 'due_date' in todo_data:
-               todo.vtodo.set('due', todo_data['due_date'])
-           if 'completed_date' in todo_data:
-               todo.vtodo.set('completed', todo_data['completed_date'])
+           # Update the todo properties by modifying the icalendar instance
+           for component in todo.icalendar_instance.walk():
+               if component.name == "VTODO":
+                   if 'title' in todo_data:
+                       component['summary'] = todo_data['title']
+                   if 'description' in todo_data:
+                       component['description'] = todo_data['description']
+                   if 'priority' in todo_data:
+                       component['priority'] = todo_data['priority']
+                   if 'status' in todo_data:
+                       component['status'] = todo_data['status']
+                   if 'due_date' in todo_data:
+                       component['due'] = todo_data['due_date']
+                   if 'completed_date' in todo_data:
+                       component['completed'] = todo_data['completed_date']
+                   break  # We only need to modify the first VTODO
            
            # Save the updated todo
            todo.save()
@@ -579,27 +644,44 @@ class CalDAVClient:
             # Convert events to list of dictionaries
             event_list = []
             for event in events:
-                # Get the VEVENT data
-                vevent = event.vobject_instance.vevent
-                
-                # Extract event properties
+                # Extract event properties by walking through components
                 event_data = {
                     "id": event.id,
-                    "title": vevent.summary.value if hasattr(vevent, 'summary') else '',
-                    "description": vevent.description.value if hasattr(vevent, 'description') else '',
-                    "start_time": vevent.dtstart.value if hasattr(vevent, 'dtstart') else '',
-                    "end_time": vevent.dtend.value if hasattr(vevent, 'dtend') else '',
-                    "location": vevent.location.value if hasattr(vevent, 'location') else '',
-                    "status": vevent.status.value if hasattr(vevent, 'status') else ''
+                    "title": '',
+                    "description": '',
+                    "start_time": '',
+                    "end_time": '',
+                    "location": '',
+                    "status": '',
+                    "attendees": []
                 }
                 
-                # Add attendees if they exist
-                attendees = vevent.get('attendee', [])
-                if attendees:
-                    if isinstance(attendees, list):
-                        event_data["attendees"] = attendees
-                    else:
-                        event_data["attendees"] = [attendees]
+                # Walk through components to find VEVENT
+                for component in event.icalendar_instance.walk():
+                    if component.name == "VEVENT":
+                        event_data["title"] = str(component.get('summary', ''))
+                        event_data["description"] = str(component.get('description', ''))
+                        
+                        # Handle date/time values
+                        dtstart = component.get('dtstart')
+                        if dtstart:
+                            event_data["start_time"] = dtstart.dt.strftime("%m/%d/%Y %H:%M")
+                        
+                        dtend = component.get('dtend')
+                        if dtend:
+                            event_data["end_time"] = dtend.dt.strftime("%m/%d/%Y %H:%M")
+                        
+                        event_data["location"] = str(component.get('location', ''))
+                        event_data["status"] = str(component.get('status', ''))
+                        
+                        # Handle attendees
+                        attendees = component.get('attendee', [])
+                        if attendees:
+                            if isinstance(attendees, list):
+                                event_data["attendees"] = [str(a) for a in attendees]
+                            else:
+                                event_data["attendees"] = [str(attendees)]
+                        break  # We only need the first VEVENT
                 
                 event_list.append(event_data)
             
@@ -641,19 +723,39 @@ class CalDAVClient:
             # Convert todos to list of dictionaries
             todo_list = []
             for todo in todos:
-                # Get the VTODO data
-                vtodo = todo.vobject_instance.vtodo
-                
-                # Extract todo properties
+                # Extract todo properties by walking through components
                 todo_data = {
                     "id": todo.id,
-                    "title": vtodo.summary.value if hasattr(vtodo, 'summary') else '',
-                    "description": vtodo.description.value if hasattr(vtodo, 'description') else '',
-                    "priority": vtodo.priority.value if hasattr(vtodo, 'priority') else 5,
-                    "status": vtodo.status.value if hasattr(vtodo, 'status') else '',
-                    "due_date": vtodo.due.value if hasattr(vtodo, 'due') else '',
-                    "completed_date": vtodo.completed.value if hasattr(vtodo, 'completed') else ''
+                    "title": '',
+                    "description": '',
+                    "priority": 5,
+                    "status": '',
+                    "due_date": '',
+                    "completed_date": ''
                 }
+                
+                # Walk through components to find VTODO
+                for component in todo.icalendar_instance.walk():
+                    if component.name == "VTODO":
+                        todo_data["title"] = str(component.get('summary', ''))
+                        todo_data["description"] = str(component.get('description', ''))
+                        
+                        # Handle priority
+                        priority = component.get('priority')
+                        if priority:
+                            todo_data["priority"] = int(priority)
+                        
+                        todo_data["status"] = str(component.get('status', ''))
+                        
+                        # Handle date/time values
+                        due = component.get('due')
+                        if due:
+                            todo_data["due_date"] = due.dt.strftime("%m/%d/%Y %H:%M")
+                        
+                        completed = component.get('completed')
+                        if completed:
+                            todo_data["completed_date"] = completed.dt.strftime("%m/%d/%Y %H:%M")
+                        break  # We only need the first VTODO
                 
                 todo_list.append(todo_data)
             

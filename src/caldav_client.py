@@ -304,10 +304,10 @@ class CalDAVClient:
            # Convert to dictionary format
            journal_data = {
                "id": journal_id,
-               "title": journal.vjournal.get('summary', ''),
-               "description": journal.vjournal.get('description', ''),
-               "date": journal.vjournal.get('dtstart', ''),
-               "status": journal.vjournal.get('status', '')
+               "title": journal.vobject_instance.vjournal.summary.value if hasattr(journal.vobject_instance.vjournal, 'summary') else '',
+               "description": journal.vobject_instance.vjournal.description.value if hasattr(journal.vobject_instance.vjournal, 'description') else '',
+               "date": journal.vobject_instance.vjournal.dtstart.value if hasattr(journal.vobject_instance.vjournal, 'dtstart') else '',
+               "status": journal.vobject_instance.vjournal.status.value if hasattr(journal.vobject_instance.vjournal, 'status') else ''
            }
            
            logger.info(f"Read journal: {journal_id}")
@@ -341,13 +341,13 @@ class CalDAVClient:
            
            # Update the journal properties
            if 'title' in journal_data:
-               journal.vjournal.set('summary', journal_data['title'])
+               journal.vobject_instance.vjournal.summary.value = journal_data['title']
            if 'description' in journal_data:
-               journal.vjournal.set('description', journal_data['description'])
+               journal.vobject_instance.vjournal.description.value = journal_data['description']
            if 'date' in journal_data:
-               journal.vjournal.set('dtstart', journal_data['date'])
+               journal.vobject_instance.vjournal.dtstart.value = journal_data['date']
            if 'status' in journal_data:
-               journal.vjournal.set('status', journal_data['status'])
+               journal.vobject_instance.vjournal.status.value = journal_data['status']
            
            # Save the updated journal
            journal.save()
@@ -580,17 +580,17 @@ class CalDAVClient:
             event_list = []
             for event in events:
                 # Get the VEVENT data
-                vevent = event.vevent
+                vevent = event.vobject_instance.vevent
                 
                 # Extract event properties
                 event_data = {
                     "id": event.id,
-                    "title": vevent.get('summary', ''),
-                    "description": vevent.get('description', ''),
-                    "start_time": vevent.get('dtstart', ''),
-                    "end_time": vevent.get('dtend', ''),
-                    "location": vevent.get('location', ''),
-                    "status": vevent.get('status', '')
+                    "title": vevent.summary.value if hasattr(vevent, 'summary') else '',
+                    "description": vevent.description.value if hasattr(vevent, 'description') else '',
+                    "start_time": vevent.dtstart.value if hasattr(vevent, 'dtstart') else '',
+                    "end_time": vevent.dtend.value if hasattr(vevent, 'dtend') else '',
+                    "location": vevent.location.value if hasattr(vevent, 'location') else '',
+                    "status": vevent.status.value if hasattr(vevent, 'status') else ''
                 }
                 
                 # Add attendees if they exist
@@ -642,17 +642,17 @@ class CalDAVClient:
             todo_list = []
             for todo in todos:
                 # Get the VTODO data
-                vtodo = todo.vtodo
+                vtodo = todo.vobject_instance.vtodo
                 
                 # Extract todo properties
                 todo_data = {
                     "id": todo.id,
-                    "title": vtodo.get('summary', ''),
-                    "description": vtodo.get('description', ''),
-                    "priority": vtodo.get('priority', 5),
-                    "status": vtodo.get('status', ''),
-                    "due_date": vtodo.get('due', ''),
-                    "completed_date": vtodo.get('completed', '')
+                    "title": vtodo.summary.value if hasattr(vtodo, 'summary') else '',
+                    "description": vtodo.description.value if hasattr(vtodo, 'description') else '',
+                    "priority": vtodo.priority.value if hasattr(vtodo, 'priority') else 5,
+                    "status": vtodo.status.value if hasattr(vtodo, 'status') else '',
+                    "due_date": vtodo.due.value if hasattr(vtodo, 'due') else '',
+                    "completed_date": vtodo.completed.value if hasattr(vtodo, 'completed') else ''
                 }
                 
                 todo_list.append(todo_data)

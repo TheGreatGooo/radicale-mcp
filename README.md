@@ -2,41 +2,43 @@
 
 A Python-based MCP (Model Communication Protocol) application that provides CRUD operations for events, journals, and todos using the caldav Python library.
 
+## Prerequisites
+
+- Python 3.8 or higher
+- `uv` (optional, for fast installation) or `pip`
+
 ## Dependencies
 
-This application requires the following Python packages:
-- `caldav` - For CalDAV protocol support
-- `python-dateutil` - For date/time parsing and manipulation
-- `fastmcp` - For MCP protocol implementation
+The required Python packages are listed in `pyproject.toml` and will be installed automatically:
 
-These dependencies are automatically managed through the package configuration.
+- `caldav`
+- `python-dateutil`
+- `fastmcp`
 
-## Installation with uv
+## Installation Options
 
-This application can be installed and run using `uv` or `uvx`:
+You can install the application using `uv` (recommended) or `pip`.
 
-### Using uvx (no installation needed)
+### Using uv (recommended)
 ```bash
-uvx caldav-mcp
+uv pip install radicale-mcp
 ```
 
-### Using uv to install
+### Using pip
 ```bash
-uv pip install caldav-mcp
-uvx caldav-mcp
+pip install radicale-mcp
 ```
 
 ### From source
 ```bash
-git clone https://github.com/example/caldav-mcp.git
-cd caldav-mcp
+git clone https://github.com/TheGreatGooo/radicale-mcp.git
+cd radicale-mcp
 uv pip install -e .
-uvx caldav-mcp
 ```
 
-### Direct usage with uvx from GitHub
+### Using uvx (run directly from GitHub)
 ```bash
-uvx github:example/caldav-mcp
+uvx radicale-mcp@https://github.com/TheGreatGooo/radicale-mcp
 ```
 
 ## Features
@@ -60,14 +62,6 @@ uvx github:example/caldav-mcp
 │  STDIO Output   │    │                  │    │                  │
 └─────────────────┘    └──────────────────┘    └──────────────────┘
 ```
-
-## Installation
-
-1. Clone or download this repository
-2. Install dependencies:
-   ```bash
-   pip install -e .
-   ```
 
 ## Configuration
 
@@ -99,7 +93,7 @@ Create `config/settings.json`:
 The application runs as an MCP server by default. To start it:
 
 ```bash
-python -m server
+python -m src.server
 ```
 
 Or simply:
@@ -165,8 +159,8 @@ The application will listen on STDIO for MCP protocol messages. It supports the 
 
 ### Project Structure
 ```
-caldav-mcp/
-├── main.py                 # Main application entry point
+radicale-mcp/
+├── src/main.py                 # Main application entry point
 ├── requirements.txt        # Python dependencies
 ├── config/                 # Configuration files
 │   └── settings.json      # Application settings

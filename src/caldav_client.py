@@ -6,6 +6,8 @@ Handles connection and communication with CalDAV server.
 import logging
 from typing import Dict, Any, Optional
 from datetime import datetime
+from models.event import Event
+from models.todo import Todo
 
 import caldav
 
@@ -622,7 +624,7 @@ class CalDAVClient:
             end_date: Optional end date filter (ISO format)
             
         Returns:
-            List of event dictionaries or empty list if failed
+            List of Event objects or empty list if failed
         """
         if not self.connected:
             logger.error("Not connected to CalDAV server")
@@ -641,7 +643,7 @@ class CalDAVClient:
                 # Get all events
                 events = calendar.events()
             
-            # Convert events to list of dictionaries
+            # Convert events to list of Event objects
             event_list = []
             for event in events:
                 # Extract event properties by walking through components
@@ -649,8 +651,8 @@ class CalDAVClient:
                     "id": event.id,
                     "title": '',
                     "description": '',
-                    "start_time": '',
-                    "end_time": '',
+                    "start_time": None,
+                    "end_time": None,
                     "location": '',
                     "status": '',
                     "attendees": []
@@ -665,11 +667,11 @@ class CalDAVClient:
                         # Handle date/time values
                         dtstart = component.get('dtstart')
                         if dtstart:
-                            event_data["start_time"] = dtstart.dt.strftime("%m/%d/%Y %H:%M")
+                            event_data["start_time"] = dtstart.dt
                         
                         dtend = component.get('dtend')
                         if dtend:
-                            event_data["end_time"] = dtend.dt.strftime("%m/%d/%Y %H:%M")
+                            event_data["end_time"] = dtend.dt
                         
                         event_data["location"] = str(component.get('location', ''))
                         event_data["status"] = str(component.get('status', ''))
@@ -683,7 +685,18 @@ class CalDAVClient:
                                 event_data["attendees"] = [str(attendees)]
                         break  # We only need the first VEVENT
                 
-                event_list.append(event_data)
+                # Create Event object from the extracted data
+                event_obj = Event(
+                    title=event_data["title"],
+                    description=event_data["description"],
+                    start_time=event_data["start_time"],
+                    end_time=event_data["end_time"],
+                    location=event_data["location"],
+                    attendees=event_data["attendees"],
+                    status=event_data["status"]
+                )
+                event_obj.id = event_data["id"]
+                event_list.append(event_obj)
             
             logger.info(f"Retrieved {len(event_list)} events")
             return event_list
@@ -701,7 +714,7 @@ class CalDAVClient:
             end_date: Optional end date filter (ISO format)
             
         Returns:
-            List of todo dictionaries or empty list if failed
+            List of Todo objects or empty list if failed
         """
         if not self.connected:
             logger.error("Not connected to CalDAV server")
@@ -720,7 +733,7 @@ class CalDAVClient:
                 # Get all todos
                 todos = calendar.todos()
             
-            # Convert todos to list of dictionaries
+            # Convert todos to list of Todo objects
             todo_list = []
             for todo in todos:
                 # Extract todo properties by walking through components
@@ -730,8 +743,8 @@ class CalDAVClient:
                     "description": '',
                     "priority": 5,
                     "status": '',
-                    "due_date": '',
-                    "completed_date": ''
+                    "due_date": None,
+                    "completion_date": None
                 }
                 
                 # Walk through components to find VTODO
@@ -750,14 +763,24 @@ class CalDAVClient:
                         # Handle date/time values
                         due = component.get('due')
                         if due:
-                            todo_data["due_date"] = due.dt.strftime("%m/%d/%Y %H:%M")
+                            todo_data["due_date"] = due.dt
                         
                         completed = component.get('completed')
                         if completed:
-                            todo_data["completed_date"] = completed.dt.strftime("%m/%d/%Y %H:%M")
+                            todo_data["completion_date"] = completed.dt
                         break  # We only need the first VTODO
                 
-                todo_list.append(todo_data)
+                # Create Todo object from the extracted data
+                todo_obj = Todo(
+                    title=todo_data["title"],
+                    description=todo_data["description"],
+                    due_date=todo_data["due_date"],
+                    completion_date=todo_data["completion_date"],
+                    status=todo_data["status"],
+                    priority=todo_data["priority"]
+                )
+                todo_obj.id = todo_data["id"]
+                todo_list.append(todo_obj)
             
             logger.info(f"Retrieved {len(todo_list)} todos")
             return todo_list

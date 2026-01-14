@@ -22,6 +22,12 @@ caldav_client = CalDAVClient(config_manager)
 def get_events() -> list:
     """Get all events from the CalDAV server."""
     try:
+        # Check if connected, if not, connect
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return [{"error": "Failed to connect to CalDAV server"}]
+        
         events = caldav_client.get_events()
         return [event.to_dict() for event in events]
     except Exception as e:
@@ -58,6 +64,12 @@ def reconnect() -> dict:
 def create_event(title: str, start_time: str, end_time: str) -> dict:
     """Create a new event on the CalDAV server."""
     try:
+        # Check if connected, if not, connect
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return {"error": "Failed to connect to CalDAV server"}
+        
         event = Event(
             title=title,
             start_time=start_time,
@@ -72,6 +84,12 @@ def create_event(title: str, start_time: str, end_time: str) -> dict:
 def get_todos() -> list:
     """Get all todos from the CalDAV server."""
     try:
+        # Check if connected, if not, connect
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return [{"error": "Failed to connect to CalDAV server"}]
+        
         todos = caldav_client.get_todos()
         return [todo.to_dict() for todo in todos]
     except Exception as e:
@@ -81,6 +99,12 @@ def get_todos() -> list:
 def create_todo(title: str, due_date: str) -> dict:
     """Create a new todo on the CalDAV server."""
     try:
+        # Check if connected, if not, connect
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return {"error": "Failed to connect to CalDAV server"}
+        
         todo = Todo(
             title=title,
             due_date=due_date

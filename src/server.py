@@ -81,6 +81,48 @@ def create_event(title: str, start_time: str, end_time: str) -> dict:
         return {"error": f"Failed to create event: {str(e)}"}
 
 @mcp.tool
+def create_recurring_event(title: str, start_time: str, end_time: str, frequency: str, interval: int = 1, count: int = None) -> dict:
+    """Create a recurring event on the CalDAV server.
+    
+    Args:
+        title: Title of the event
+        start_time: Start time of the event
+        end_time: End time of the event
+        frequency: Recurrence frequency (YEARLY, MONTHLY, WEEKLY, DAILY)
+        interval: Interval between recurrences (default: 1)
+        count: Number of occurrences (optional)
+    
+    Returns:
+        Dictionary with event creation result
+    """
+    try:
+        # Check if connected, if not, connect
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return {"error": "Failed to connect to CalDAV server"}
+        
+        # Create recurrence rule
+        rrule = {"FREQ": frequency.upper()}
+        if interval != 1:
+            rrule["INTERVAL"] = interval
+        if count:
+            rrule["COUNT"] = count
+        
+        event = Event(
+            title=title,
+            start_time=start_time,
+            end_time=end_time
+        )
+        # Add rrule to event data
+        event_data = event.to_dict()
+        event_data['rrule'] = rrule
+        created_event = caldav_client.create_event(event_data)
+        return created_event
+    except Exception as e:
+        return {"error": f"Failed to create recurring event: {str(e)}"}
+
+@mcp.tool
 def get_todos() -> list:
     """Get all todos from the CalDAV server."""
     try:

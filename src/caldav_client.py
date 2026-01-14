@@ -101,23 +101,17 @@ class CalDAVClient:
            principal = self.client.principal()
            calendar = principal.calendars()[0]  # Use first calendar
            
-           # Create VEVENT
-           vevent = caldav.vcal.VEVENT()
-           vevent.add('summary', event_data.get('title', 'Untitled Event'))
-           vevent.add('description', event_data.get('description', ''))
-           vevent.add('dtstart', event_data.get('start_time'))
-           vevent.add('dtend', event_data.get('end_time'))
-           
-           # Add other properties if available
-           if 'location' in event_data:
-               vevent.add('location', event_data['location'])
-           if 'attendees' in event_data:
-               vevent.add('attendee', event_data['attendees'])
-           if 'status' in event_data:
-               vevent.add('status', event_data['status'])
-           
-           # Create the event in the calendar
-           new_event = calendar.save(vevent)
+           # Create event using calendar.save_event with parameters
+           new_event = calendar.save_event(
+               summary=event_data.get('title', 'Untitled Event'),
+               description=event_data.get('description', ''),
+               dtstart=event_data.get('start_time'),
+               dtend=event_data.get('end_time'),
+               location=event_data.get('location'),
+               attendees=event_data.get('attendees'),
+               status=event_data.get('status'),
+               rrule=event_data.get('rrule')
+           )
            
            # Return the event ID
            logger.info(f"Created event: {event_data.get('title', 'Unknown')}")
@@ -283,18 +277,13 @@ class CalDAVClient:
            principal = self.client.principal()
            calendar = principal.calendars()[0]  # Use first calendar
            
-           # Create VJOURNAL
-           vjournal = caldav.vcal.VJOURNAL()
-           vjournal.add('summary', journal_data.get('title', 'Untitled Journal'))
-           vjournal.add('description', journal_data.get('description', ''))
-           vjournal.add('dtstart', journal_data.get('date'))
-           
-           # Add other properties if available
-           if 'status' in journal_data:
-               vjournal.add('status', journal_data['status'])
-           
-           # Create the journal entry in the calendar
-           new_journal = calendar.save(vjournal)
+           # Create journal entry using calendar.save_journal with parameters
+           new_journal = calendar.save_journal(
+               summary=journal_data.get('title', 'Untitled Journal'),
+               description=journal_data.get('description', ''),
+               dtstart=journal_data.get('date'),
+               status=journal_data.get('status')
+           )
            
            # Return the journal ID
            logger.info(f"Created journal: {journal_data.get('title', 'Unknown')}")
@@ -449,22 +438,15 @@ class CalDAVClient:
            principal = self.client.principal()
            calendar = principal.calendars()[0]  # Use first calendar
            
-           # Create VTODO
-           vtodo = caldav.vcal.VTODO()
-           vtodo.add('summary', todo_data.get('title', 'Untitled Todo'))
-           vtodo.add('description', todo_data.get('description', ''))
-           vtodo.add('priority', todo_data.get('priority', 5))
-           
-           # Add other properties if available
-           if 'status' in todo_data:
-               vtodo.add('status', todo_data['status'])
-           if 'due_date' in todo_data:
-               vtodo.add('due', todo_data['due_date'])
-           if 'completed_date' in todo_data:
-               vtodo.add('completed', todo_data['completed_date'])
-           
-           # Create the todo in the calendar
-           new_todo = calendar.save(vtodo)
+           # Create todo using calendar.save_todo with parameters
+           new_todo = calendar.save_todo(
+               summary=todo_data.get('title', 'Untitled Todo'),
+               description=todo_data.get('description', ''),
+               priority=todo_data.get('priority', 5),
+               status=todo_data.get('status'),
+               due=todo_data.get('due_date'),
+               completed=todo_data.get('completed_date')
+           )
            
            # Return the todo ID
            logger.info(f"Created todo: {todo_data.get('title', 'Unknown')}")

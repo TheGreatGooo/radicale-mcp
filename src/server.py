@@ -10,6 +10,7 @@ from config_manager import ConfigManager
 from models.event import Event
 from models.journal import Journal
 from models.todo import Todo
+from datetime import datetime
 
 # Initialize the MCP server
 mcp = FastMCP("Radicale MCP server 🚀")
@@ -62,7 +63,16 @@ def reconnect() -> dict:
 
 @mcp.tool
 def create_event(title: str, start_time: str, end_time: str) -> dict:
-    """Create a new event on the CalDAV server."""
+    """Create a new event on the CalDAV server.
+    
+    Args:
+        title: Title of the event
+        start_time: Start time of the event in ISO format (e.g., '2026-01-14T02:16:17.478')
+        end_time: End time of the event in ISO format (e.g., '2026-01-14T02:16:17.478')
+    
+    Returns:
+        Dictionary with event creation result
+    """
     try:
         # Check if connected, if not, connect
         if not caldav_client.is_connected():
@@ -70,10 +80,14 @@ def create_event(title: str, start_time: str, end_time: str) -> dict:
             if not success:
                 return {"error": "Failed to connect to CalDAV server"}
         
+        # Convert string timestamps to datetime objects
+        start_dt = datetime.fromisoformat(start_time)
+        end_dt = datetime.fromisoformat(end_time)
+        
         event = Event(
             title=title,
-            start_time=start_time,
-            end_time=end_time
+            start_time=start_dt,
+            end_time=end_dt
         )
         created_event = caldav_client.create_event(event)
         return created_event.to_dict()
@@ -86,8 +100,8 @@ def create_recurring_event(title: str, start_time: str, end_time: str, frequency
     
     Args:
         title: Title of the event
-        start_time: Start time of the event
-        end_time: End time of the event
+        start_time: Start time of the event in ISO format (e.g., '2026-01-14T02:16:17.478')
+        end_time: End time of the event in ISO format (e.g., '2026-01-14T02:16:17.478')
         frequency: Recurrence frequency (YEARLY, MONTHLY, WEEKLY, DAILY)
         interval: Interval between recurrences (default: 1)
         count: Number of occurrences (optional)
@@ -109,10 +123,14 @@ def create_recurring_event(title: str, start_time: str, end_time: str, frequency
         if count:
             rrule["COUNT"] = count
         
+        # Convert string timestamps to datetime objects
+        start_dt = datetime.fromisoformat(start_time)
+        end_dt = datetime.fromisoformat(end_time)
+        
         event = Event(
             title=title,
-            start_time=start_time,
-            end_time=end_time
+            start_time=start_dt,
+            end_time=end_dt
         )
         # Add rrule to event data
         event_data = event.to_dict()
@@ -139,7 +157,15 @@ def get_todos() -> list:
 
 @mcp.tool
 def create_todo(title: str, due_date: str) -> dict:
-    """Create a new todo on the CalDAV server."""
+    """Create a new todo on the CalDAV server.
+    
+    Args:
+        title: Title of the todo
+        due_date: Due date of the todo in ISO format (e.g., '2026-01-14T02:16:17.478')
+    
+    Returns:
+        Dictionary with todo creation result
+    """
     try:
         # Check if connected, if not, connect
         if not caldav_client.is_connected():
@@ -147,9 +173,12 @@ def create_todo(title: str, due_date: str) -> dict:
             if not success:
                 return {"error": "Failed to connect to CalDAV server"}
         
+        # Convert string timestamp to datetime object
+        due_dt = datetime.fromisoformat(due_date)
+        
         todo = Todo(
             title=title,
-            due_date=due_date
+            due_date=due_dt
         )
         created_todo = caldav_client.create_todo(todo)
         return created_todo.to_dict()

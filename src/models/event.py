@@ -7,25 +7,28 @@ from typing import Dict, Any, List
 from datetime import datetime
 from models.base_model import BaseModel
 
+
 class Event(BaseModel):
     """Model representing a calendar event."""
-    
-    def __init__(self,
-                 title: str = "",
-                 description: str = "",
-                 start_time: datetime = None,
-                 end_time: datetime = None,
-                 location: str = "",
-                 attendees: List[str] = None,
-                 categories: List[str] = None,
-                 status: str = "CONFIRMED",
-                 priority: int = 5,
-                 url: str = "",
-                 vevent: Any = None,
-                 **kwargs):
+
+    def __init__(
+        self,
+        title: str = "",
+        description: str = "",
+        start_time: datetime = None,
+        end_time: datetime = None,
+        location: str = "",
+        attendees: List[str] = None,
+        categories: List[str] = None,
+        status: str = "CONFIRMED",
+        priority: int = 5,
+        url: str = "",
+        vevent: Any = None,
+        **kwargs,
+    ):
         """
         Initialize an Event model.
-        
+
         Args:
             title: Event title
             description: Event description
@@ -40,7 +43,7 @@ class Event(BaseModel):
             **kwargs: Additional properties
         """
         super().__init__(**kwargs)
-        
+
         self.title = title
         self.description = description
         self.start_time = start_time
@@ -52,11 +55,11 @@ class Event(BaseModel):
         self.priority = priority
         self.url = url
         self.vevent = vevent
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """
         Convert event to dictionary representation.
-        
+
         Returns:
             Dictionary representation of the event
         """
@@ -71,13 +74,13 @@ class Event(BaseModel):
             "categories": self.categories,
             "status": self.status,
             "priority": self.priority,
-            "url": self.url
+            "url": self.url,
         }
-    
+
     def from_dict(self, data: Dict[str, Any]) -> None:
         """
         Initialize event from dictionary data.
-        
+
         Args:
             data: Dictionary containing event data
         """
@@ -91,30 +94,30 @@ class Event(BaseModel):
         self.priority = data.get("priority", 5)
         self.url = data.get("url", "")
         self.vevent = data.get("vevent", None)
-        
+
         # Handle datetime conversion
         start_time_str = data.get("start_time")
         if start_time_str:
             self.start_time = datetime.fromisoformat(start_time_str)
         else:
             self.start_time = None
-            
+
         end_time_str = data.get("end_time")
         if end_time_str:
             self.end_time = datetime.fromisoformat(end_time_str)
         else:
             self.end_time = None
-    
+
     def to_ical(self) -> str:
         """
         Convert event to iCalendar format.
-        
+
         Returns:
             iCalendar string representation
         """
         # This is a simplified implementation
         # In a real implementation, this would use the caldav library properly
-        ical = f"BEGIN:VEVENT\n"
+        ical = "BEGIN:VEVENT\n"
         ical += f"UID:{self.id}\n"
         ical += f"SUMMARY:{self.title}\n"
         ical += f"DESCRIPTION:{self.description}\n"
@@ -127,24 +130,24 @@ class Event(BaseModel):
         ical += f"PRIORITY:{self.priority}\n"
         if self.url:
             ical += f"URL:{self.url}\n"
-        ical += f"END:VEVENT\n"
+        ical += "END:VEVENT\n"
         return ical
-    
+
     def from_ical(self, ical_str: str) -> None:
         """
         Initialize event from iCalendar string.
-        
+
         Args:
             ical_str: iCalendar string representation
         """
         # This is a simplified implementation
         # In a real implementation, this would parse the iCalendar properly
         pass
-    
+
     def validate(self) -> bool:
         """
         Validate the event data.
-        
+
         Returns:
             True if valid, False otherwise
         """

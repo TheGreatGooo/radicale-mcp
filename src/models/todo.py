@@ -7,23 +7,26 @@ from typing import Dict, Any, List
 from datetime import datetime
 from models.base_model import BaseModel
 
+
 class Todo(BaseModel):
     """Model representing a todo item."""
-    
-    def __init__(self, 
-                 title: str = "",
-                 description: str = "",
-                 due_date: datetime = None,
-                 completion_date: datetime = None,
-                 status: str = "NEEDS-ACTION",
-                 priority: int = 5,
-                 categories: List[str] = None,
-                 url: str = "",
-                 percent_complete: int = 0,
-                 **kwargs):
+
+    def __init__(
+        self,
+        title: str = "",
+        description: str = "",
+        due_date: datetime = None,
+        completion_date: datetime = None,
+        status: str = "NEEDS-ACTION",
+        priority: int = 5,
+        categories: List[str] = None,
+        url: str = "",
+        percent_complete: int = 0,
+        **kwargs,
+    ):
         """
         Initialize a Todo model.
-        
+
         Args:
             title: Todo title
             description: Todo description
@@ -37,7 +40,7 @@ class Todo(BaseModel):
             **kwargs: Additional properties
         """
         super().__init__(**kwargs)
-        
+
         self.title = title
         self.description = description
         self.due_date = due_date
@@ -47,11 +50,11 @@ class Todo(BaseModel):
         self.categories = categories or []
         self.url = url
         self.percent_complete = percent_complete
-    
+
     def to_dict(self) -> Dict[str, Any]:
         """
         Convert todo to dictionary representation.
-        
+
         Returns:
             Dictionary representation of the todo item
         """
@@ -65,13 +68,13 @@ class Todo(BaseModel):
             "priority": self.priority,
             "categories": self.categories,
             "url": self.url,
-            "percent_complete": self.percent_complete
+            "percent_complete": self.percent_complete,
         }
-    
+
     def from_dict(self, data: Dict[str, Any]) -> None:
         """
         Initialize todo from dictionary data.
-        
+
         Args:
             data: Dictionary containing todo data
         """
@@ -83,30 +86,30 @@ class Todo(BaseModel):
         self.categories = data.get("categories", [])
         self.url = data.get("url", "")
         self.percent_complete = data.get("percent_complete", 0)
-        
+
         # Handle datetime conversion
         due_date_str = data.get("due_date")
         if due_date_str:
             self.due_date = datetime.fromisoformat(due_date_str)
         else:
             self.due_date = None
-            
+
         completion_date_str = data.get("completion_date")
         if completion_date_str:
             self.completion_date = datetime.fromisoformat(completion_date_str)
         else:
             self.completion_date = None
-    
+
     def to_ical(self) -> str:
         """
         Convert todo to iCalendar format.
-        
+
         Returns:
             iCalendar string representation
         """
         # This is a simplified implementation
         # In a real implementation, this would use the caldav library properly
-        ical = f"BEGIN:VTODO\n"
+        ical = "BEGIN:VTODO\n"
         ical += f"UID:{self.id}\n"
         ical += f"SUMMARY:{self.title}\n"
         ical += f"DESCRIPTION:{self.description}\n"
@@ -119,24 +122,24 @@ class Todo(BaseModel):
         ical += f"PERCENT-COMPLETE:{self.percent_complete}\n"
         if self.url:
             ical += f"URL:{self.url}\n"
-        ical += f"END:VTODO\n"
+        ical += "END:VTODO\n"
         return ical
-    
+
     def from_ical(self, ical_str: str) -> None:
         """
         Initialize todo from iCalendar string.
-        
+
         Args:
             ical_str: iCalendar string representation
         """
         # This is a simplified implementation
         # In a real implementation, this would parse the iCalendar properly
         pass
-    
+
     def validate(self) -> bool:
         """
         Validate the todo data.
-        
+
         Returns:
             True if valid, False otherwise
         """

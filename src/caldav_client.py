@@ -82,12 +82,12 @@ class CalDAVClient:
         """
         return self.connected
 
-    def create_event(self, event_data: Dict[str, Any]) -> Optional[str]:
+    def create_event(self, event: Event) -> Optional[str]:
         """
         Create a new event in the CalDAV server.
 
         Args:
-            event_data: Dictionary containing event data
+            event: Event object containing event data
 
         Returns:
             ID of created event or None if failed
@@ -103,14 +103,14 @@ class CalDAVClient:
 
             # Create event using calendar.save_event with parameters
             new_event = calendar.save_event(
-                summary=event_data.get("title", "Untitled Event"),
-                description=event_data.get("description", ""),
-                dtstart=event_data.get("start_time"),
-                dtend=event_data.get("end_time"),
-                location=event_data.get("location"),
-                attendees=event_data.get("attendees"),
-                status=event_data.get("status"),
-                rrule=event_data.get("rrule"),
+                summary=event.title or "Untitled Event",
+                description=event.description or "",
+                dtstart=event.start_time,
+                dtend=event.end_time,
+                location=event.location,
+                attendees=event.attendees,
+                status=event.status,
+                rrule=event.rrule if hasattr(event, 'rrule') else None,
             )
 
             # Return the event ID

@@ -114,7 +114,7 @@ class CalDAVClient:
             )
 
             # Return the event ID
-            logger.info(f"Created event: {event_data.get('title', 'Unknown')}")
+            logger.info(f"Created event: {event.title or "Untitled Event"}")
             return new_event.id
         except Exception as e:
             logger.error(f"Failed to create event: {e}")

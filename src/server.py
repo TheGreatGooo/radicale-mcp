@@ -103,8 +103,14 @@ def create_event(title: str, start_time: str, end_time: str) -> dict:
         end_dt = datetime.fromisoformat(end_time)
 
         event = Event(title=title, start_time=start_dt, end_time=end_dt)
-        created_event = caldav_client.create_event(event)
-        return created_event.to_dict()
+        created_event_id = caldav_client.create_event(event)
+        if not created_event_id:
+            return {"error": "Failed to create event"}
+        # Retrieve full Event object
+        event_obj = caldav_client.read_event(created_event_id)
+        if hasattr(event_obj, "to_dict"):
+            return event_obj.to_dict()
+        return {"id": created_event_id}
     except Exception as e:
         return {"error": f"Failed to create event: {str(e)}"}
 
@@ -138,20 +144,27 @@ def create_recurring_event(
             if not success:
                 return {"error": "Failed to connect to CalDAV server"}
 
-        # Create recurrence rule
+        # Build recurrence rule
         rrule = {"FREQ": frequency.upper()}
         if interval != 1:
             rrule["INTERVAL"] = interval
         if count:
             rrule["COUNT"] = count
 
-        # Convert string timestamps to datetime objects
+        # Parse timestamps
         start_dt = datetime.fromisoformat(start_time)
         end_dt = datetime.fromisoformat(end_time)
 
+        # Create Event with recurrence rule
         event = Event(title=title, start_time=start_dt, end_time=end_dt, rrule=rrule)
-        created_event = caldav_client.create_event(event)
-        return created_event.to_dict()
+        created_event_id = caldav_client.create_event(event)
+        if not created_event_id:
+            return {"error": "Failed to create recurring event"}
+        # Retrieve full Event object
+        event_obj = caldav_client.read_event(created_event_id)
+        if hasattr(event_obj, "to_dict"):
+            return event_obj.to_dict()
+        return {"id": created_event_id}
     except Exception as e:
         return {"error": f"Failed to create recurring event: {str(e)}"}
 

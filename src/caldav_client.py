@@ -120,63 +120,30 @@ class CalDAVClient:
             logger.error(f"Failed to create event: {e}")
             raise  # Propagate the exception
 
-    def read_event(self, event_id: str) -> Optional[Dict[str, Any]]:
+    def read_event(self, event_id: str) -> Optional[Event]:
         """
         Read an event from the CalDAV server.
-
+    
         Args:
             event_id: ID of the event to read
-
+    
         Returns:
-            Dictionary containing event data or None if not found
+            Event object or None if not found
         """
         if not self.connected:
             logger.error("Not connected to CalDAV server")
             raise Exception("Not connected to CalDAV server")
-
+    
         try:
-            # Get the principal and calendar
             principal = self.client.principal()
-            calendar = principal.calendars()[0]  # Use first calendar
-
-            # Retrieve the event by ID
-            event = calendar.event(event_id)
-
-            # Convert to dictionary format
-            event_data = {
-                "id": event_id,
-                "title": "",
-                "description": "",
-                "start_time": "",
-                "end_time": "",
-                "location": "",
-                "status": "",
-            }
-
-            # Walk through components to find VEVENT
-            for component in event.icalendar_instance.walk():
-                if component.name == "VEVENT":
-                    event_data["title"] = str(component.get("summary", ""))
-                    event_data["description"] = str(component.get("description", ""))
-
-                    # Handle date/time values
-                    dtstart = component.get("dtstart")
-                    if dtstart:
-                        event_data["start_time"] = dtstart.dt.strftime("%m/%d/%Y %H:%M")
-
-                    dtend = component.get("dtend")
-                    if dtend:
-                        event_data["end_time"] = dtend.dt.strftime("%m/%d/%Y %H:%M")
-
-                    event_data["location"] = str(component.get("location", ""))
-                    event_data["status"] = str(component.get("status", ""))
-                    break  # We only need the first VEVENT
-
+            calendar = principal.calendars()[0]
+            caldav_event = calendar.event(event_id)
+            event_obj = self._convert_caldav_event(caldav_event)
             logger.info(f"Read event: {event_id}")
-            return event_data
+            return event_obj
         except Exception as e:
             logger.error(f"Failed to read event: {e}")
-            raise  # Propagate the exception
+            raise
 
     def update_event(self, event_id: str, event_data: Dict[str, Any]) -> bool:
         """

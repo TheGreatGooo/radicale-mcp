@@ -599,6 +599,70 @@ class CalDAVClient:
             logger.error(f"Failed to delete todo: {e}")
             raise  # Propagate the exception
 
+    def _convert_caldav_event(self, caldav_event) -> Event:
+        """
+        Convert a CalDAV event to an Event object.
+
+        Args:
+            caldav_event: CalDAV event object
+
+        Returns:
+            Event object
+        """
+        # Extract event properties by walking through components
+        event_data = {
+            "id": caldav_event.id,
+            "title": "",
+            "description": "",
+            "start_time": None,
+            "end_time": None,
+            "location": "",
+            "status": "",
+            "attendees": [],
+        }
+
+        # Walk through components to find VEVENT
+        for component in caldav_event.icalendar_instance.walk():
+            if component.name == "VEVENT":
+                event_data["title"] = str(component.get("summary", ""))
+                event_data["description"] = str(
+                    component.get("description", "")
+                )
+
+                # Handle date/time values
+                dtstart = component.get("dtstart")
+                if dtstart:
+                    event_data["start_time"] = dtstart.dt
+
+                dtend = component.get("dtend")
+                if dtend:
+                    event_data["end_time"] = dtend.dt
+
+                event_data["location"] = str(component.get("location", ""))
+                event_data["status"] = str(component.get("status", ""))
+
+                # Handle attendees
+                attendees = component.get("attendee", [])
+                if attendees:
+                    if isinstance(attendees, list):
+                        event_data["attendees"] = [str(a) for a in attendees]
+                    else:
+                        event_data["attendees"] = [str(attendees)]
+                break  # We only need the first VEVENT
+
+        # Create Event object from the extracted data
+        event_obj = Event(
+            title=event_data["title"],
+            description=event_data["description"],
+            start_time=event_data["start_time"],
+            end_time=event_data["end_time"],
+            location=event_data["location"],
+            attendees=event_data["attendees"],
+            status=event_data["status"],
+        )
+        event_obj.id = event_data["id"]
+        return event_obj
+
     def get_events(
         self, start_date: Optional[str] = None, end_date: Optional[str] = None
     ) -> list:
@@ -632,59 +696,7 @@ class CalDAVClient:
             # Convert events to list of Event objects
             event_list = []
             for event in events:
-                # Extract event properties by walking through components
-                event_data = {
-                    "id": event.id,
-                    "title": "",
-                    "description": "",
-                    "start_time": None,
-                    "end_time": None,
-                    "location": "",
-                    "status": "",
-                    "attendees": [],
-                }
-
-                # Walk through components to find VEVENT
-                for component in event.icalendar_instance.walk():
-                    if component.name == "VEVENT":
-                        event_data["title"] = str(component.get("summary", ""))
-                        event_data["description"] = str(
-                            component.get("description", "")
-                        )
-
-                        # Handle date/time values
-                        dtstart = component.get("dtstart")
-                        if dtstart:
-                            event_data["start_time"] = dtstart.dt
-
-                        dtend = component.get("dtend")
-                        if dtend:
-                            event_data["end_time"] = dtend.dt
-
-                        event_data["location"] = str(component.get("location", ""))
-                        event_data["status"] = str(component.get("status", ""))
-
-                        # Handle attendees
-                        attendees = component.get("attendee", [])
-                        if attendees:
-                            if isinstance(attendees, list):
-                                event_data["attendees"] = [str(a) for a in attendees]
-                            else:
-                                event_data["attendees"] = [str(attendees)]
-                        break  # We only need the first VEVENT
-
-                # Create Event object from the extracted data
-                event_obj = Event(
-                    title=event_data["title"],
-                    description=event_data["description"],
-                    start_time=event_data["start_time"],
-                    end_time=event_data["end_time"],
-                    location=event_data["location"],
-                    attendees=event_data["attendees"],
-                    status=event_data["status"],
-                )
-                event_obj.id = event_data["id"]
-                event_list.append(event_obj)
+                event_list.append(self._convert_caldav_event(event))
 
             logger.info(f"Retrieved {len(event_list)} events")
             return event_list

@@ -10,9 +10,23 @@ from config_manager import ConfigManager
 from models.event import Event
 from models.todo import Todo
 from datetime import datetime
+import os
+from zoneinfo import ZoneInfo
 
 # Initialize the MCP server
 mcp = FastMCP("Radicale MCP server 🚀")
+
+def _parse_to_tz(dt_str: str) -> datetime:
+    """Parse ISO datetime string and convert to target timezone."""
+    dt = datetime.fromisoformat(dt_str)
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=ZoneInfo("UTC"))
+    target_tz_name = os.getenv("TIMEZONE", "America/New_York")
+    try:
+        target_tz = ZoneInfo(target_tz_name)
+    except Exception:
+        target_tz = ZoneInfo("America/New_York")
+    return dt.astimezone(target_tz)
 
 # Initialize configuration and client
 config_manager = ConfigManager()
@@ -99,8 +113,8 @@ def create_event(title: str, start_time: str, end_time: str) -> dict:
                 return {"error": "Failed to connect to CalDAV server"}
 
         # Convert string timestamps to datetime objects
-        start_dt = datetime.fromisoformat(start_time)
-        end_dt = datetime.fromisoformat(end_time)
+        start_dt = _parse_to_tz(start_time)
+        end_dt = _parse_to_tz(end_time)
 
         event = Event(title=title, start_time=start_dt, end_time=end_dt)
         created_event_id = caldav_client.create_event(event)
@@ -152,8 +166,8 @@ def create_recurring_event(
             rrule["COUNT"] = count
 
         # Parse timestamps
-        start_dt = datetime.fromisoformat(start_time)
-        end_dt = datetime.fromisoformat(end_time)
+        start_dt = _parse_to_tz(start_time)
+        end_dt = _parse_to_tz(end_time)
 
         # Create Event with recurrence rule
         event = Event(title=title, start_time=start_dt, end_time=end_dt, rrule=rrule)
@@ -204,7 +218,7 @@ def create_todo(title: str, due_date: str) -> dict:
                 return {"error": "Failed to connect to CalDAV server"}
 
         # Convert string timestamp to datetime object
-        due_dt = datetime.fromisoformat(due_date)
+        due_dt = _parse_to_tz(due_date)
 
         todo = Todo(title=title, due_date=due_dt)
         created_todo = caldav_client.create_todo(todo)

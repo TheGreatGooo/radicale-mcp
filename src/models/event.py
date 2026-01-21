@@ -24,6 +24,7 @@ class Event(BaseModel):
         priority: int = 5,
         url: str = "",
         vevent: Any = None,
+        rrule: Any = None,
         **kwargs,
     ):
         """
@@ -55,6 +56,7 @@ class Event(BaseModel):
         self.priority = priority
         self.url = url
         self.vevent = vevent
+        self.rrule = rrule
 
     def to_dict(self) -> Dict[str, Any]:
         """
@@ -75,6 +77,7 @@ class Event(BaseModel):
             "status": self.status,
             "priority": self.priority,
             "url": self.url,
+            "rrule": self.rrule,
         }
 
     def from_dict(self, data: Dict[str, Any]) -> None:
@@ -94,6 +97,7 @@ class Event(BaseModel):
         self.priority = data.get("priority", 5)
         self.url = data.get("url", "")
         self.vevent = data.get("vevent", None)
+        self.rrule = data.get("rrule", None)
 
         # Handle datetime conversion
         start_time_str = data.get("start_time")

@@ -586,6 +586,7 @@ class CalDAVClient:
             "location": "",
             "status": "",
             "attendees": [],
+            "rrule": None,
         }
 
         # Walk through components to find VEVENT
@@ -615,6 +616,12 @@ class CalDAVClient:
                         event_data["attendees"] = [str(a) for a in attendees]
                     else:
                         event_data["attendees"] = [str(attendees)]
+
+                # Handle recurrence rule
+                rrule = component.get("rrule")
+                if rrule:
+                    event_data["rrule"] = rrule
+
                 break  # We only need the first VEVENT
 
         # Create Event object from the extracted data
@@ -626,6 +633,7 @@ class CalDAVClient:
             location=event_data["location"],
             attendees=event_data["attendees"],
             status=event_data["status"],
+            rrule=event_data.get("rrule"),
         )
         event_obj.id = event_data["id"]
         return event_obj

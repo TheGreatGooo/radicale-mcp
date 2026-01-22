@@ -620,6 +620,12 @@ class CalDAVClient:
                 if rrule:
                     event_data["rrule"] = rrule
 
+                # Ensure ID is set from UID if missing
+                if not event_data["id"]:
+                    uid = component.get("uid")
+                    if uid:
+                        event_data["id"] = str(uid)
+
                 break  # We only need the first VEVENT
 
         # Create Event object from the extracted data

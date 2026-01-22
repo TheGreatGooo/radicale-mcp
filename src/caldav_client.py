@@ -1,6 +1,6 @@
 """
-CalDAV Client for MCP CalDAV Application
-Handles connection and communication with CalDAV server.
+Calendar Client for MCP Calendar Application
+Handles connection and communication with the calendar.
 """
 
 import logging
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class CalDAVClient:
-    """Client for connecting to and interacting with a CalDAV server."""
+    """Client for connecting to and interacting with a calendar."""
 
     def __init__(self, config_manager):
         """
@@ -29,7 +29,7 @@ class CalDAVClient:
 
     def connect(self) -> bool:
         """
-        Establish connection to the CalDAV server.
+        Establish connection to the calendar.
 
         Returns:
             True if connection successful, False otherwise
@@ -57,21 +57,21 @@ class CalDAVClient:
                 )
 
             self.connected = True
-            logger.info("Successfully connected to CalDAV server")
+            logger.info("Successfully connected to the calendar")
             return True
 
         except Exception as e:
-            logger.error(f"Failed to connect to CalDAV server: {e}")
+            logger.error(f"Failed to connect to the calendar: {e}")
             self.connected = False
             raise  # Propagate the exception
 
     def disconnect(self) -> None:
-        """Close the connection to the CalDAV server."""
+        """Close the connection to the calendar."""
         if self.client:
             # In a real implementation, we would close the connection
             self.client = None
         self.connected = False
-        logger.info("Disconnected from CalDAV server")
+        logger.info("Disconnected from the calendar")
 
     def is_connected(self) -> bool:
         """
@@ -93,8 +93,8 @@ class CalDAVClient:
             ID of created event or None if failed
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -110,11 +110,11 @@ class CalDAVClient:
                 location=event.location,
                 attendees=event.attendees,
                 status=event.status,
-                rrule=event.rrule if hasattr(event, 'rrule') else None,
+                rrule=event.rrule if hasattr(event, "rrule") else None,
             )
 
             # Return the event ID
-            logger.info(f"Created event: {event.title or "Untitled Event"}")
+            logger.info(f"Created event: {event.title or 'Untitled Event'}")
             return new_event.id
         except Exception as e:
             logger.error(f"Failed to create event: {e}")
@@ -123,17 +123,17 @@ class CalDAVClient:
     def read_event(self, event_id: str) -> Optional[Event]:
         """
         Read an event from the CalDAV server.
-    
+
         Args:
             event_id: ID of the event to read
-    
+
         Returns:
             Event object or None if not found
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
-    
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
+
         try:
             principal = self.client.principal()
             calendar = principal.calendars()[0]
@@ -157,8 +157,8 @@ class CalDAVClient:
             True if successful, False otherwise
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -205,8 +205,8 @@ class CalDAVClient:
             True if successful, False otherwise
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -236,8 +236,8 @@ class CalDAVClient:
             ID of created journal or None if failed
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -270,8 +270,8 @@ class CalDAVClient:
             Dictionary containing journal data or None if not found
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -322,8 +322,8 @@ class CalDAVClient:
             True if successful, False otherwise
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -366,8 +366,8 @@ class CalDAVClient:
             True if successful, False otherwise
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -397,8 +397,8 @@ class CalDAVClient:
             ID of created todo or None if failed
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -433,8 +433,8 @@ class CalDAVClient:
             Dictionary containing todo data or None if not found
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -498,8 +498,8 @@ class CalDAVClient:
             True if successful, False otherwise
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -546,8 +546,8 @@ class CalDAVClient:
             True if successful, False otherwise
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -593,9 +593,7 @@ class CalDAVClient:
         for component in caldav_event.icalendar_instance.walk():
             if component.name == "VEVENT":
                 event_data["title"] = str(component.get("summary", ""))
-                event_data["description"] = str(
-                    component.get("description", "")
-                )
+                event_data["description"] = str(component.get("description", ""))
 
                 # Handle date/time values
                 dtstart = component.get("dtstart")
@@ -652,8 +650,8 @@ class CalDAVClient:
             List of Event objects or empty list if failed
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar
@@ -694,8 +692,8 @@ class CalDAVClient:
             List of Todo objects or empty list if failed
         """
         if not self.connected:
-            logger.error("Not connected to CalDAV server")
-            raise Exception("Not connected to CalDAV server")
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
 
         try:
             # Get the principal and calendar

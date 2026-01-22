@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-FastMCP Server Implementation for CalDAV Operations
-This demonstrates how to use the fastmcp library with the existing CalDAV functionality.
+FastMCP Server Implementation for calendar Operations
+This demonstrates how to use the fastmcp library with the existing calendar functionality.
 """
 
 from fastmcp import FastMCP
@@ -16,6 +16,7 @@ from zoneinfo import ZoneInfo
 # Initialize the MCP server
 mcp = FastMCP("Radicale MCP server 🚀")
 
+
 def _parse_to_tz(dt_str: str) -> datetime:
     """Parse ISO datetime string and convert to target timezone."""
     dt = datetime.fromisoformat(dt_str)
@@ -28,6 +29,7 @@ def _parse_to_tz(dt_str: str) -> datetime:
         target_tz = ZoneInfo("America/New_York")
     return dt.astimezone(target_tz)
 
+
 # Initialize configuration and client
 config_manager = ConfigManager()
 caldav_client = CalDAVClient(config_manager)
@@ -35,13 +37,13 @@ caldav_client = CalDAVClient(config_manager)
 
 @mcp.tool
 def get_events() -> list:
-    """Get all events from the CalDAV server."""
+    """Get all events from the calendar."""
     try:
         # Check if connected, if not, connect
         if not caldav_client.is_connected():
             success = caldav_client.connect()
             if not success:
-                return [{"error": "Failed to connect to CalDAV server"}]
+                return [{"error": "Failed to connect to the calendar"}]
 
         events = caldav_client.get_events()
         return [event.to_dict() for event in events]
@@ -51,26 +53,26 @@ def get_events() -> list:
 
 @mcp.tool
 def connect() -> dict:
-    """Connect to the CalDAV server."""
+    """Connect to the calendar."""
     try:
         success = caldav_client.connect()
         if success:
             return {
                 "status": "connected",
-                "message": "Successfully connected to CalDAV server",
+                "message": "Successfully connected to the calendar",
             }
         else:
-            return {"status": "failed", "message": "Failed to connect to CalDAV server"}
+            return {"status": "failed", "message": "Failed to connect to the calendar"}
     except Exception as e:
         return {
             "status": "error",
-            "message": f"Error connecting to CalDAV server: {str(e)}",
+            "message": f"Error connecting to the calendar: {str(e)}",
         }
 
 
 @mcp.tool
 def reconnect() -> dict:
-    """Reconnect to the CalDAV server."""
+    """Reconnect to the calendar."""
     try:
         # Disconnect first
         caldav_client.disconnect()
@@ -79,23 +81,23 @@ def reconnect() -> dict:
         if success:
             return {
                 "status": "reconnected",
-                "message": "Successfully reconnected to CalDAV server",
+                "message": "Successfully reconnected to the calendar",
             }
         else:
             return {
                 "status": "failed",
-                "message": "Failed to reconnect to CalDAV server",
+                "message": "Failed to reconnect to the calendar",
             }
     except Exception as e:
         return {
             "status": "error",
-            "message": f"Error reconnecting to CalDAV server: {str(e)}",
+            "message": f"Error reconnecting to the calendar: {str(e)}",
         }
 
 
 @mcp.tool
 def create_event(title: str, start_time: str, end_time: str) -> dict:
-    """Create a new event on the CalDAV server.
+    """Create a new event on the calendar.
 
     Args:
         title: Title of the event
@@ -110,7 +112,7 @@ def create_event(title: str, start_time: str, end_time: str) -> dict:
         if not caldav_client.is_connected():
             success = caldav_client.connect()
             if not success:
-                return {"error": "Failed to connect to CalDAV server"}
+                return {"error": "Failed to connect to the calendar"}
 
         # Convert string timestamps to datetime objects
         start_dt = _parse_to_tz(start_time)
@@ -138,7 +140,7 @@ def create_recurring_event(
     interval: int = 1,
     count: int = None,
 ) -> dict:
-    """Create a recurring event on the CalDAV server.
+    """Create a recurring event on the calendar.
 
     Args:
         title: Title of the event
@@ -156,7 +158,7 @@ def create_recurring_event(
         if not caldav_client.is_connected():
             success = caldav_client.connect()
             if not success:
-                return {"error": "Failed to connect to CalDAV server"}
+                return {"error": "Failed to connect to the calendar"}
 
         # Build recurrence rule
         rrule = {"FREQ": frequency.upper()}
@@ -185,13 +187,13 @@ def create_recurring_event(
 
 @mcp.tool
 def get_todos() -> list:
-    """Get all todos from the CalDAV server."""
+    """Get all todos from the calendar."""
     try:
         # Check if connected, if not, connect
         if not caldav_client.is_connected():
             success = caldav_client.connect()
             if not success:
-                return [{"error": "Failed to connect to CalDAV server"}]
+                return [{"error": "Failed to connect to the calendar"}]
 
         todos = caldav_client.get_todos()
         return [todo.to_dict() for todo in todos]
@@ -199,9 +201,24 @@ def get_todos() -> list:
         return [{"error": f"Failed to get todos: {str(e)}"}]
 
 
+# New delete_event tool
+@mcp.tool
+def delete_event(event_id: str) -> dict:
+    """Delete an event from the calendar."""
+    try:
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return {"error": "Failed to connect to the calendar"}
+        result = caldav_client.delete_event(event_id)
+        return {"deleted": result}
+    except Exception as e:
+        return {"error": f"Failed to delete event: {str(e)}"}
+
+
 @mcp.tool
 def create_todo(title: str, due_date: str) -> dict:
-    """Create a new todo on the CalDAV server.
+    """Create a new todo on the calendar.
 
     Args:
         title: Title of the todo
@@ -215,7 +232,7 @@ def create_todo(title: str, due_date: str) -> dict:
         if not caldav_client.is_connected():
             success = caldav_client.connect()
             if not success:
-                return {"error": "Failed to connect to CalDAV server"}
+                return {"error": "Failed to connect to the calendar"}
 
         # Convert string timestamp to datetime object
         due_dt = _parse_to_tz(due_date)

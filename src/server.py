@@ -20,9 +20,10 @@ mcp = FastMCP("Radicale MCP server 🚀")
 def _parse_to_tz(dt_str: str) -> datetime:
     """Parse ISO datetime string and convert to target timezone."""
     dt = datetime.fromisoformat(dt_str)
-    if dt.tzinfo is None:
-        dt = dt.replace(tzinfo=ZoneInfo("UTC"))
     target_tz_name = os.getenv("TIMEZONE", "America/New_York")
+    if dt.tzinfo is None:
+        dt = dt.replace(tzinfo=ZoneInfo(target_tz_name))
+
     try:
         target_tz = ZoneInfo(target_tz_name)
     except Exception:

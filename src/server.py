@@ -204,14 +204,14 @@ def get_todos() -> list:
 
 # New delete_event tool
 @mcp.tool
-def delete_event(event_id: str) -> dict:
+def delete_event(id: str) -> dict:
     """Delete an event from the calendar."""
     try:
         if not caldav_client.is_connected():
             success = caldav_client.connect()
             if not success:
                 return {"error": "Failed to connect to the calendar"}
-        result = caldav_client.delete_event(event_id)
+        result = caldav_client.delete_event(id)
         return {"deleted": result}
     except Exception as e:
         return {"error": f"Failed to delete event: {str(e)}"}

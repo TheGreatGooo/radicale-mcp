@@ -218,29 +218,128 @@ def delete_event(id: str) -> dict:
 
 
 @mcp.tool
-def create_todo(title: str, due_date: str) -> dict:
+def delete_todo(id: str) -> dict:
+    """Delete a todo from the calendar."""
+    try:
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return {"error": "Failed to connect to the calendar"}
+        result = caldav_client.delete_todo(id)
+        return {"deleted": result}
+    except Exception as e:
+        return {"error": f"Failed to delete todo: {str(e)}"}
+
+@mcp.tool
+def create_journal(
+    date: str,
+    title: str = "",
+    content: str = "",
+    tags: list = None,
+    categories: list = None,
+    priority: int = 5,
+    url: str = "",
+) -> dict:
+    """Create a new journal entry on the calendar.
+
+    Args:
+        date: Date of the journal entry in ISO format.
+        title: Title of the journal.
+        content: Content of the journal.
+        tags: List of tags.
+        categories: List of categories.
+        priority: Priority level (1-9).
+        url: Optional URL.
+    Returns:
+        Dictionary with journal creation result.
+    """
+    try:
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return {"error": "Failed to connect to the calendar"}
+        # Parse date
+        journal_date = _parse_to_tz(date) if date else None
+        journal_data = {
+            "date": journal_date,
+            "title": title,
+            "description": content,
+            "tags": tags or [],
+            "categories": categories or [],
+            "priority": priority,
+            "url": url,
+        }
+        created_journal_id = caldav_client.create_journal(journal_data)
+        return {"id": created_journal_id}
+    except Exception as e:
+        return {"error": f"Failed to create journal: {str(e)}"}
+
+@mcp.tool
+def delete_journal(id: str) -> dict:
+    """Delete a journal entry from the calendar."""
+    try:
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return {"error": "Failed to connect to the calendar"}
+        result = caldav_client.delete_journal(id)
+        return {"deleted": result}
+    except Exception as e:
+        return {"error": f"Failed to delete journal: {str(e)}"}
+
+@mcp.tool
+def create_todo(
+    title: str,
+    due_date: str,
+    description: str = "",
+    completion_date: str = None,
+    status: str = "NEEDS-ACTION",
+    priority: int = 5,
+    categories: list = None,
+    url: str = "",
+    percent_complete: int = 0,
+) -> dict:
     """Create a new todo on the calendar.
 
     Args:
         title: Title of the todo
         due_date: Due date of the todo in ISO format (e.g., '2026-01-14T02:16:17.478')
+        description: Optional description of the todo
+        completion_date: Optional completion date in ISO format
+        status: Todo status (default "NEEDS-ACTION")
+        priority: Priority level (default 5)
+        categories: List of category strings (optional)
+        url: Optional URL associated with the todo
+        percent_complete: Completion percentage (0-100, default 0)
 
     Returns:
         Dictionary with todo creation result
     """
     try:
-        # Check if connected, if not, connect
+        # Ensure connection
         if not caldav_client.is_connected():
             success = caldav_client.connect()
             if not success:
                 return {"error": "Failed to connect to the calendar"}
 
-        # Convert string timestamp to datetime object
-        due_dt = _parse_to_tz(due_date)
+        # Parse dates if provided
+        due_dt = _parse_to_tz(due_date) if due_date else None
+        completed_dt = _parse_to_tz(completion_date) if completion_date else None
 
-        todo = Todo(title=title, due_date=due_dt)
-        created_todo = caldav_client.create_todo(todo)
-        return created_todo.to_dict()
+        # Build Todo instance
+        todo = Todo(
+            title=title,
+            description=description,
+            due_date=due_dt,
+            completion_date=completed_dt,
+            status=status,
+            priority=priority,
+            categories=categories,
+            url=url,
+            percent_complete=percent_complete,
+        )
+        created_todo_id = caldav_client.create_todo(todo)
+        return {"id": created_todo_id}
     except Exception as e:
         return {"error": f"Failed to create todo: {str(e)}"}
 

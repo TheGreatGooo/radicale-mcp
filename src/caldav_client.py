@@ -386,41 +386,39 @@ class CalDAVClient:
             logger.error(f"Failed to delete journal: {e}")
             raise  # Propagate the exception
 
-    def create_todo(self, todo_data: Dict[str, Any]) -> Optional[str]:
-        """
-        Create a new todo item in the CalDAV server.
-
+    def create_todo(self, todo: Todo) -> Optional[str]:
+        """Create a new todo item in the CalDAV server using a Todo object.
+    
         Args:
-            todo_data: Dictionary containing todo data
-
+            todo: A :class:`~models.todo.Todo` instance containing the todo data.
+    
         Returns:
-            ID of created todo or None if failed
+            The ID of the created todo or ``None`` if creation failed.
         """
         if not self.connected:
             logger.error("Not connected to the calendar")
             raise Exception("Not connected to the calendar")
-
+    
         try:
             # Get the principal and calendar
             principal = self.client.principal()
             calendar = principal.calendars()[0]  # Use first calendar
-
-            # Create todo using calendar.save_todo with parameters
+    
+            # Create todo using calendar.save_todo with parameters from the Todo object
             new_todo = calendar.save_todo(
-                summary=todo_data.get("title", "Untitled Todo"),
-                description=todo_data.get("description", ""),
-                priority=todo_data.get("priority", 5),
-                status=todo_data.get("status"),
-                due=todo_data.get("due_date"),
-                completed=todo_data.get("completed_date"),
+                summary=todo.title or "Untitled Todo",
+                description=getattr(todo, "description", ""),
+                priority=getattr(todo, "priority", 5),
+                status=getattr(todo, "status", None),
+                due=todo.due_date,
+                completed=getattr(todo, "completion_date", None),
             )
-
-            # Return the todo ID
-            logger.info(f"Created todo: {todo_data.get('title', 'Unknown')}")
+    
+            logger.info(f"Created todo: {todo.title or 'Unknown'}")
             return new_todo.id
         except Exception as e:
             logger.error(f"Failed to create todo: {e}")
-            raise  # Propagate the exception
+            raise
 
     def read_todo(self, todo_id: str) -> Optional[Dict[str, Any]]:
         """

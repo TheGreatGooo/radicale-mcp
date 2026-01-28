@@ -747,6 +747,11 @@ class CalDAVClient:
                         completed = component.get("completed")
                         if completed:
                             todo_data["completion_date"] = completed.dt
+                        # Fallback to UID if ID not set
+                        if not todo_data["id"]:
+                            uid = component.get("uid")
+                            if uid:
+                                todo_data["id"] = str(uid)
                         break  # We only need the first VTODO
 
                 # Create Todo object from the extracted data
@@ -763,7 +768,47 @@ class CalDAVClient:
 
             logger.info(f"Retrieved {len(todo_list)} todos")
             return todo_list
-
+    
         except Exception as e:
             logger.error(f"Failed to retrieve todos: {e}")
+            raise  # Propagate the exception
+    
+    def get_journals(
+        self, start_date: Optional[str] = None, end_date: Optional[str] = None
+    ) -> list:
+        """
+        Retrieve journals from the CalDAV server.
+
+        Args:
+            start_date: Optional start date filter (ISO format)
+            end_date: Optional end date filter (ISO format)
+
+        Returns:
+            List of journal dictionaries or empty list if failed
+        """
+        if not self.connected:
+            logger.error("Not connected to the calendar")
+            raise Exception("Not connected to the calendar")
+
+        try:
+            # Get the principal and calendar
+            principal = self.client.principal()
+            calendar = principal.calendars()[0]  # Use first calendar
+
+            # Fetch journals from the calendar
+            if start_date and end_date:
+                journals = calendar.journals(start=start_date, end=end_date)
+            else:
+                journals = calendar.journals()
+
+            journal_list = []
+            for journal in journals:
+                # Use existing read_journal to get dict representation
+                journal_data = self.read_journal(journal.id)
+                journal_list.append(journal_data)
+
+            logger.info(f"Retrieved {len(journal_list)} journals")
+            return journal_list
+        except Exception as e:
+            logger.error(f"Failed to retrieve journals: {e}")
             raise  # Propagate the exception

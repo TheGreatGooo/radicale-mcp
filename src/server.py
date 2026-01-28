@@ -202,6 +202,22 @@ def get_todos() -> list:
         return [{"error": f"Failed to get todos: {str(e)}"}]
 
 
+@mcp.tool
+def get_journals() -> list:
+    """Get all journals from the calendar."""
+    try:
+        # Check if connected, if not, connect
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return [{"error": "Failed to connect to the calendar"}]
+
+        journals = caldav_client.get_journals()
+        return journals
+    except Exception as e:
+        return [{"error": f"Failed to get journals: {str(e)}"}]
+
+
 # New delete_event tool
 @mcp.tool
 def delete_event(id: str) -> dict:
@@ -286,6 +302,19 @@ def delete_journal(id: str) -> dict:
         return {"deleted": result}
     except Exception as e:
         return {"error": f"Failed to delete journal: {str(e)}"}
+
+@mcp.tool
+def get_journal(journal_id: str) -> dict:
+    """Retrieve a journal entry by its ID."""
+    try:
+        if not caldav_client.is_connected():
+            success = caldav_client.connect()
+            if not success:
+                return {"error": "Failed to connect to the calendar"}
+        journal = caldav_client.read_journal(journal_id)
+        return journal
+    except Exception as e:
+        return {"error": f"Failed to get journal: {str(e)}"}
 
 @mcp.tool
 def create_todo(

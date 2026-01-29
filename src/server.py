@@ -98,16 +98,7 @@ def reconnect() -> dict:
 
 @mcp.tool
 def create_event(title: str, start_time: str, end_time: str) -> dict:
-    """Create a new event on the calendar.
-
-    Args:
-        title: Title of the event
-        start_time: Start time of the event in ISO format (e.g., '2026-01-14T02:16:17.478')
-        end_time: End time of the event in ISO format (e.g., '2026-01-14T02:16:17.478')
-
-    Returns:
-        Dictionary with event creation result
-    """
+    """Create a new event on the calendar. Time in ISO format (e.g., '2026-01-14T02:16:17.478')"""
     try:
         # Check if connected, if not, connect
         if not caldav_client.is_connected():
@@ -141,19 +132,7 @@ def create_recurring_event(
     interval: int = 1,
     count: int = None,
 ) -> dict:
-    """Create a recurring event on the calendar.
-
-    Args:
-        title: Title of the event
-        start_time: Start time of the event in ISO format (e.g., '2026-01-14T02:16:17.478')
-        end_time: End time of the event in ISO format (e.g., '2026-01-14T02:16:17.478')
-        frequency: Recurrence frequency (YEARLY, MONTHLY, WEEKLY, DAILY)
-        interval: Interval between recurrences (default: 1)
-        count: Number of occurrences (optional)
-
-    Returns:
-        Dictionary with event creation result
-    """
+    """Create a recurring event on the calendar. Time in ISO format (e.g., '2026-01-14T02:16:17.478'). Frequency (YEARLY, MONTHLY, WEEKLY, DAILY). Interval between recurrences (default: 1). Number of occurrences (optional)"""
     try:
         # Check if connected, if not, connect
         if not caldav_client.is_connected():
@@ -256,19 +235,7 @@ def create_journal(
     priority: int = 5,
     url: str = "",
 ) -> dict:
-    """Create a new journal entry on the calendar.
-
-    Args:
-        date: Date of the journal entry in ISO format.
-        title: Title of the journal.
-        content: Content of the journal.
-        tags: List of tags.
-        categories: List of categories.
-        priority: Priority level 1-9.
-        url: Optional URL.
-    Returns:
-        Dictionary with journal creation result.
-    """
+    """Create a new journal entry on the calendar. Dates in ISO format."""
     try:
         if not caldav_client.is_connected():
             success = caldav_client.connect()
@@ -328,22 +295,7 @@ def create_todo(
     url: str = "",
     percent_complete: int = 0,
 ) -> dict:
-    """Create a new todo on the calendar.
-
-    Args:
-        title: Title of the todo
-        due_date: Due date of the todo in ISO format (e.g., '2026-01-14T02:16:17.478')
-        description: Optional description of the todo
-        completion_date: Optional completion date in ISO format
-        status: Todo status (default "NEEDS-ACTION")
-        priority: Priority level (default 5)
-        categories: List of category strings (optional)
-        url: Optional URL associated with the todo
-        percent_complete: Completion percentage (0-100, default 0)
-
-    Returns:
-        Dictionary with todo creation result
-    """
+    """Create a new todo on the calendar. Time in ISO format (e.g., '2026-01-14T02:16:17.478')"""
     try:
         # Ensure connection
         if not caldav_client.is_connected():

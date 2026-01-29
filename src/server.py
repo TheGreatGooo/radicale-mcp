@@ -230,8 +230,8 @@ def create_journal(
     date: str,
     title: str = "",
     content: str = "",
-    tags: list = None,
-    categories: list = None,
+    tags_comma_seperated: str = "",
+    categories_comma_seperated: str = "",
     priority: int = 5,
     url: str = "",
 ) -> dict:
@@ -247,8 +247,8 @@ def create_journal(
             "date": journal_date,
             "title": title,
             "description": content,
-            "tags": tags or [],
-            "categories": categories or [],
+            "tags": tags.split(",") or [],
+            "categories": categories.split(",") or [],
             "priority": priority,
             "url": url,
         }

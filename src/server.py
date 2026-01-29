@@ -264,7 +264,7 @@ def create_journal(
         content: Content of the journal.
         tags: List of tags.
         categories: List of categories.
-        priority: Priority level (1-9).
+        priority: Priority level 1-9.
         url: Optional URL.
     Returns:
         Dictionary with journal creation result.

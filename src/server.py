@@ -291,7 +291,7 @@ def create_todo(
     completion_date: str = None,
     status: str = "NEEDS-ACTION",
     priority: int = 5,
-    categories: list = None,
+    categories_comma_seperated: str = "",
     url: str = "",
     percent_complete: int = 0,
 ) -> dict:
@@ -315,7 +315,7 @@ def create_todo(
             completion_date=completed_dt,
             status=status,
             priority=priority,
-            categories=categories,
+            categories=categories_comma_seperated.split(","),
             url=url,
             percent_complete=percent_complete,
         )
